@@ -1,20 +1,32 @@
 package edu.zhuravlev.myfirsttelegrambot;
 
+import busentity.Bus;
+import busparser.BusParser;
+import busparser.DefaultBusParser;
+import edu.zhuravlev.myfirsttelegrambot.illustrator.ScheduleIllustrator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
+import org.springframework.util.comparator.Comparators;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMediaGroup;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.io.File;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class CounterTelegramBot extends TelegramLongPollingBot {
     final BotConfig config;
+    final ScheduleIllustrator illustrator;
 
     @Override
     public String getBotToken() {
@@ -44,9 +56,17 @@ public class CounterTelegramBot extends TelegramLongPollingBot {
     }
 
     private void startBot(long chatId, String userName) {
+        BusParser parser = new DefaultBusParser();
+        List<Bus> buses = parser.parse(new File(config.getPath()));
         SendMessage message = new SendMessage();
         message.setChatId(chatId);
-        message.setText("Hello, " + userName + "! I,m a Telegram bot.");
+        message.enableHtml(true);
+
+        buses = buses.stream().sorted((s1, s2) -> Boolean.compare(!s1.isBusOnLive(), !s2.isBusOnLive())).toList();
+
+        String test = illustrator.illustrateAll(buses);
+
+        message.setText(test);
         try {
             execute(message);
             log.info("Reply sent");
