@@ -1,4 +1,4 @@
-package edu.zhuravlev.myfirsttelegrambot;
+package edu.zhuravlev.busanalyzerbot;
 
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,4 +1,4 @@
-package edu.zhuravlev.myfirsttelegrambot.illustrator;
+package edu.zhuravlev.busanalyzerbot.illustrator;
 
 class HtmlStyleTelegramFormatter {
     private HtmlStyleTelegramFormatter() {};

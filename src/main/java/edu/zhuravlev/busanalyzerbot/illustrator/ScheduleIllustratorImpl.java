@@ -1,9 +1,9 @@
-package edu.zhuravlev.myfirsttelegrambot.illustrator;
+package edu.zhuravlev.busanalyzerbot.illustrator;
 
 import busentity.Bus;
 import org.springframework.stereotype.Component;
-import static edu.zhuravlev.myfirsttelegrambot.illustrator.HtmlStyleTelegramFormatter.format;
-import static edu.zhuravlev.myfirsttelegrambot.illustrator.HtmlStyleTelegramFormatter.Styles.*;
+import static edu.zhuravlev.busanalyzerbot.illustrator.HtmlStyleTelegramFormatter.format;
+import static edu.zhuravlev.busanalyzerbot.illustrator.HtmlStyleTelegramFormatter.Styles.*;
 
 import java.util.List;
 
