@@ -3,6 +3,8 @@ package edu.zhuravlev.busanalyzerbot;
 import busentity.Bus;
 import busparser.BusParser;
 import busparser.DefaultBusParser;
+import edu.zhuravlev.busanalyzerbot.dao.User;
+import edu.zhuravlev.busanalyzerbot.dao.UserService;
 import edu.zhuravlev.busanalyzerbot.illustrator.ScheduleIllustrator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +26,8 @@ public class CounterTelegramBot extends TelegramLongPollingBot {
     final BotConfig config;
     final ScheduleIllustrator illustrator;
 
+    final UserService userService;
+
     @Override
     public String getBotToken() {
         return config.getToken();
@@ -38,7 +42,7 @@ public class CounterTelegramBot extends TelegramLongPollingBot {
 
             switch (messageText) {
                 case "Расписание":
-                    startBot(chatId);
+                    startBot(chatId, memberName);
                     break;
                 default:
                     log.info("Unexpected message");
@@ -51,7 +55,7 @@ public class CounterTelegramBot extends TelegramLongPollingBot {
         return config.getBotName();
     }
 
-    private void startBot(long chatId) {
+    private void startBot(long chatId, String name) {
         BusParser parser = new DefaultBusParser();
         List<Bus> buses = parser.parse(new File(config.getPath()));
         SendMessage message = new SendMessage();
@@ -70,5 +74,8 @@ public class CounterTelegramBot extends TelegramLongPollingBot {
         } catch (TelegramApiException e) {
             log.error(e.getMessage());
         }
+
+        User user = new User(null, name, chatId);
+        userService.addUser(user);
     }
 }

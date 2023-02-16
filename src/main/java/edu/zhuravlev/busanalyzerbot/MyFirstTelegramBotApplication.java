@@ -6,7 +6,6 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 
 @SpringBootApplication()
 public class MyFirstTelegramBotApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(MyFirstTelegramBotApplication.class, args);
     }

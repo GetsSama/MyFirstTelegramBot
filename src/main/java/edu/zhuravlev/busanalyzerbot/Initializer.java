@@ -1,5 +1,6 @@
 package edu.zhuravlev.busanalyzerbot;
 
+import edu.zhuravlev.busanalyzerbot.dao.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
