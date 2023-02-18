@@ -3,8 +3,8 @@ package edu.zhuravlev.busanalyzerbot;
 import busentity.Bus;
 import busparser.BusParser;
 import busparser.DefaultBusParser;
-import edu.zhuravlev.busanalyzerbot.dao.User;
-import edu.zhuravlev.busanalyzerbot.dao.UserService;
+import edu.zhuravlev.busanalyzerbot.repositories.user.UserTable;
+import edu.zhuravlev.busanalyzerbot.services.userservice.UserService;
 import edu.zhuravlev.busanalyzerbot.illustrator.ScheduleIllustrator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -75,7 +75,7 @@ public class CounterTelegramBot extends TelegramLongPollingBot {
             log.error(e.getMessage());
         }
 
-        User user = new User(null, name, chatId);
-        userService.addUser(user);
+        UserTable userTable = new UserTable(null, name, chatId);
+        userService.addUser(userTable);
     }
 }
