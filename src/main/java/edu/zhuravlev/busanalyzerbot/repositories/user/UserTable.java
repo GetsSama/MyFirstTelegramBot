@@ -22,6 +22,6 @@ public class UserTable {
 
     private long chatId;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<BusStopTable> busStops;
 }

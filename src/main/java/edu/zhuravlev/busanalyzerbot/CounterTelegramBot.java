@@ -3,6 +3,8 @@ package edu.zhuravlev.busanalyzerbot;
 import busentity.Bus;
 import busparser.BusParser;
 import busparser.DefaultBusParser;
+import edu.zhuravlev.busanalyzerbot.entities.BusStop;
+import edu.zhuravlev.busanalyzerbot.entities.User;
 import edu.zhuravlev.busanalyzerbot.repositories.user.UserTable;
 import edu.zhuravlev.busanalyzerbot.services.userservice.UserService;
 import edu.zhuravlev.busanalyzerbot.illustrator.ScheduleIllustrator;
@@ -41,11 +43,10 @@ public class CounterTelegramBot extends TelegramLongPollingBot {
             String memberName = update.getMessage().getFrom().getFirstName();
 
             switch (messageText) {
-                case "Расписание":
-                    startBot(chatId, memberName);
-                    break;
-                default:
-                    log.info("Unexpected message");
+                case "Расписание" -> startBot(chatId, memberName);
+                case "/add" -> addUser(chatId, memberName);
+                case "/get" -> getUser(chatId);
+                default -> log.info("Unexpected message");
             }
         }
     }
@@ -75,7 +76,23 @@ public class CounterTelegramBot extends TelegramLongPollingBot {
             log.error(e.getMessage());
         }
 
-        UserTable userTable = new UserTable(null, name, chatId);
-        userService.addUser(userTable);
+        BusStop bus1 = new BusStop("someUrl1", List.of("404", "642"));
+        BusStop bus2 = new BusStop("someUrl1", List.of("273", "m90"));
+
+        User user = new User(name, chatId, List.of(bus1, bus2));
+        userService.addUser(user);
+    }
+
+    private void addUser(long chatId, String name) {
+        BusStop bus1 = new BusStop("someUrl1", List.of("404", "642"));
+        BusStop bus2 = new BusStop("someUrl1", List.of("273", "m90"));
+
+        User user = new User(name, chatId, List.of(bus1, bus2));
+        userService.addUser(user);
+    }
+
+    private void getUser(long chatId) {
+        User user = userService.getUserByChatId(chatId);
+        System.out.println(user);
     }
 }

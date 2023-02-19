@@ -11,6 +11,6 @@ import java.util.List;
 @AllArgsConstructor
 public class User {
     private String name;
-    private String chatId;
+    private long chatId;
     private List<BusStop> busStops;
 }
