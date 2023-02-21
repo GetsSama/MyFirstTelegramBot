@@ -46,6 +46,7 @@ public class CounterTelegramBot extends TelegramLongPollingBot {
                 case "Расписание" -> startBot(chatId, memberName);
                 case "/add" -> addUser(chatId, memberName);
                 case "/get" -> getUser(chatId);
+                case "/update" -> updateUser(chatId);
                 default -> log.info("Unexpected message");
             }
         }
@@ -85,14 +86,24 @@ public class CounterTelegramBot extends TelegramLongPollingBot {
 
     private void addUser(long chatId, String name) {
         BusStop bus1 = new BusStop("someUrl1", List.of("404", "642"));
-        BusStop bus2 = new BusStop("someUrl1", List.of("273", "m90"));
+        //BusStop bus2 = new BusStop("someUrl1", List.of("273", "m90"));
 
-        User user = new User(name, chatId, List.of(bus1, bus2));
+        User user = new User(name, chatId, List.of(bus1));
         userService.addUser(user);
     }
 
-    private void getUser(long chatId) {
+    private User getUser(long chatId) {
         User user = userService.getUserByChatId(chatId);
         System.out.println(user);
+        return user;
+    }
+
+    private void updateUser(long chatId) {
+        User user = getUser(chatId);
+
+        BusStop bus2 = new BusStop("someUrl1", List.of("273", "m90"));
+        user.getBusStops().add(bus2);
+
+        userService.updateUser(user);
     }
 }

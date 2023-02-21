@@ -10,4 +10,5 @@ public interface UserService {
     List<User> getAllUsers();
     void addUser(User user);
     User getUserByChatId(long chatId);
+    void updateUser(User user);
 }

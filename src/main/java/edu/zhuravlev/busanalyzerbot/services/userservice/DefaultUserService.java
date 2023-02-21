@@ -45,4 +45,11 @@ public class DefaultUserService implements UserService {
         UserTable findUser = userRepository.getUserTableByChatId(chatId);
         return userMapper.toEntity(findUser);
     }
+
+    @Override
+    public void updateUser(User user) {
+        UserTable updatable = userMapper.toTable(user);
+        updatable.setId(1L);
+        userRepository.updateUserTableByChatId(updatable.getBusStops(), updatable.getChatId());
+    }
 }
