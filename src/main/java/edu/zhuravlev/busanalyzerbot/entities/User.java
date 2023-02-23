@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -12,5 +13,5 @@ import java.util.List;
 public class User {
     private String name;
     private long chatId;
-    private List<BusStop> busStops;
+    private Set<BusStop> busStops;
 }

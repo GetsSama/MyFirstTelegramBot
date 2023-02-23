@@ -20,6 +20,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.io.File;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Component
@@ -76,19 +77,16 @@ public class CounterTelegramBot extends TelegramLongPollingBot {
         } catch (TelegramApiException e) {
             log.error(e.getMessage());
         }
-
-        BusStop bus1 = new BusStop("someUrl1", List.of("404", "642"));
-        BusStop bus2 = new BusStop("someUrl1", List.of("273", "m90"));
-
-        User user = new User(name, chatId, List.of(bus1, bus2));
-        userService.addUser(user);
     }
 
     private void addUser(long chatId, String name) {
-        BusStop bus1 = new BusStop("someUrl1", List.of("404", "642"));
+        BusStop bus1 = new BusStop();
         //BusStop bus2 = new BusStop("someUrl1", List.of("273", "m90"));
 
-        User user = new User(name, chatId, List.of(bus1));
+        User user = new User(name, chatId, Set.of(bus1));
+        bus1.setUser(user);
+        bus1.setBusStopUrl("someUrl1");
+        bus1.setPriorityBuses(Set.of("404", "642", "235"));
         userService.addUser(user);
     }
 
@@ -101,9 +99,11 @@ public class CounterTelegramBot extends TelegramLongPollingBot {
     private void updateUser(long chatId) {
         User user = getUser(chatId);
 
-        BusStop bus2 = new BusStop("someUrl1", List.of("273", "m90"));
+        BusStop bus2 = new BusStop();
         user.getBusStops().add(bus2);
-
+        bus2.setUser(user);
+        bus2.setBusStopUrl("someUrl2");
+        bus2.setPriorityBuses(Set.of("273", "m90"));
         userService.updateUser(user);
     }
 }

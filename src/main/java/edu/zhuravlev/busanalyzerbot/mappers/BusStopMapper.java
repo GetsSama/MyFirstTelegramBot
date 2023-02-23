@@ -4,27 +4,32 @@ import edu.zhuravlev.busanalyzerbot.entities.BusStop;
 import edu.zhuravlev.busanalyzerbot.repositories.busstop.BusStopTable;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
+import org.mapstruct.factory.Mappers;
 
 import java.util.Iterator;
-import java.util.List;
-import java.util.regex.Pattern;
+import java.util.Set;
 
 @Mapper(componentModel = "spring")
 public interface BusStopMapper {
-    final String spliter = ",\\s*";
+
+    BusStopMapper INSTANCE = Mappers.getMapper(BusStopMapper.class);
+    String splitter = ",\\s*";
 
     @Mapping(target = "priorityBuses", expression = "java(getListPriorityBusesFromString(busStopTable.getPriorityBuses()))")
+    @Mapping(target = "user", ignore = true)
     BusStop toEntity(BusStopTable busStopTable);
 
     @Mapping(target = "priorityBuses", expression = "java(getStringPriorityBusesFromList(busStop.getPriorityBuses()))")
+    @Mapping(target = "user", ignore = true)
     BusStopTable toTable(BusStop busStop);
 
-    default List<String> getListPriorityBusesFromString(String buses) {
-            String[] busesNames = buses.split(spliter);
-            return List.of(busesNames);
+    default Set<String> getListPriorityBusesFromString(String buses) {
+            String[] busesNames = buses.split(splitter);
+            return Set.of(busesNames);
     }
 
-    default String getStringPriorityBusesFromList(List<String> buses) {
+    default String getStringPriorityBusesFromList(Set<String> buses) {
         StringBuilder stringBuilder = new StringBuilder();
         Iterator<String> busIter = buses.iterator();
 

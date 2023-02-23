@@ -48,8 +48,8 @@ public class DefaultUserService implements UserService {
 
     @Override
     public void updateUser(User user) {
-        UserTable updatable = userMapper.toTable(user);
-        updatable.setId(1L);
-        userRepository.updateUserTableByChatId(updatable.getBusStops(), updatable.getChatId());
+        UserTable updatable = userRepository.getUserTableByChatId(user.getChatId());
+        userMapper.updateUserTable(updatable, user);
+        userRepository.save(updatable);
     }
 }
