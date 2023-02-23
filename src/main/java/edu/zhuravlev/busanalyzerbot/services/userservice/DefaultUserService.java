@@ -2,6 +2,7 @@ package edu.zhuravlev.busanalyzerbot.services.userservice;
 
 import edu.zhuravlev.busanalyzerbot.entities.User;
 import edu.zhuravlev.busanalyzerbot.mappers.UserMapper;
+import edu.zhuravlev.busanalyzerbot.repositories.busstop.BusStopTable;
 import edu.zhuravlev.busanalyzerbot.repositories.user.UserTable;
 import edu.zhuravlev.busanalyzerbot.repositories.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -49,7 +50,9 @@ public class DefaultUserService implements UserService {
     @Override
     public void updateUser(User user) {
         UserTable updatable = userRepository.getUserTableByChatId(user.getChatId());
-        userMapper.updateUserTable(updatable, user);
+        //userMapper.updateUserTable(updatable, user);
+        BusStopTable bus1 = new BusStopTable(null, updatable, "someUrl2", "m90,273");
+        updatable.getBusStops().add(bus1);
         userRepository.save(updatable);
     }
 }

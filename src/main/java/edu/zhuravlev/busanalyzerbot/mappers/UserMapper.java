@@ -12,18 +12,17 @@ public interface UserMapper {
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
     User toEntity(UserTable userTable);
     UserTable toTable(User user);
-
     void updateUserTable(@MappingTarget UserTable userTable, User user);
 
     @AfterMapping
-    private void setToBusStopRelations(@MappingTarget User user) {
+    default void setToBusStopRelations(@MappingTarget User user) {
         var busStops = user.getBusStops();
         for(var busStop : busStops)
             busStop.setUser(user);
     }
 
     @AfterMapping
-    private void setToBusStopTableRelations(@MappingTarget UserTable userTable) {
+    default void setToBusStopTableRelations(@MappingTarget UserTable userTable) {
         var busStopsTables = userTable.getBusStops();
         for(var busStopTable : busStopsTables)
             busStopTable.setUser(userTable);
