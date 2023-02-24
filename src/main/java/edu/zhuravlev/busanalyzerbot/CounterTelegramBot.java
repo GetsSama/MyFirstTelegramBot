@@ -28,7 +28,6 @@ import java.util.Set;
 public class CounterTelegramBot extends TelegramLongPollingBot {
     final BotConfig config;
     final ScheduleIllustrator illustrator;
-
     final UserService userService;
 
     @Override

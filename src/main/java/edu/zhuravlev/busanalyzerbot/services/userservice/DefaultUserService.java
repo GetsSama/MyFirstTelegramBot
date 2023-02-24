@@ -2,14 +2,15 @@ package edu.zhuravlev.busanalyzerbot.services.userservice;
 
 import edu.zhuravlev.busanalyzerbot.entities.User;
 import edu.zhuravlev.busanalyzerbot.mappers.UserMapper;
-import edu.zhuravlev.busanalyzerbot.repositories.busstop.BusStopTable;
 import edu.zhuravlev.busanalyzerbot.repositories.user.UserTable;
 import edu.zhuravlev.busanalyzerbot.repositories.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -20,14 +21,13 @@ public class DefaultUserService implements UserService {
     @Override
     public User getUserById(Long id) {
         UserTable findUserTable = userRepository.findById(id).orElse(new UserTable());
-        User user = userMapper.toEntity(findUserTable);
-        return user;
+        return userMapper.toEntity(findUserTable);
     }
 
     @Override
-    public List<User> getAllUsers() {
-        List<UserTable> findUserTables = (List<UserTable>) userRepository.findAll();
-        List<User> users = new ArrayList<>(findUserTables.size());
+    public Set<User> getAllUsers() {
+        var findUserTables = (Set<UserTable>) userRepository.findAll();
+        var users = new HashSet<User>(findUserTables.size());
 
         for(var user : findUserTables)
             users.add(userMapper.toEntity(user));
