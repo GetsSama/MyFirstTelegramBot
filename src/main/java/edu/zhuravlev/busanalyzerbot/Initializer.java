@@ -13,10 +13,10 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 @Slf4j
 @Component
 public class Initializer {
-    private CounterTelegramBot bot;
+    private BusTelegramBot bot;
 
     @Autowired
-    public void setBot(CounterTelegramBot counterTelegramBot) {
+    public void setBot(BusTelegramBot counterTelegramBot) {
         this.bot = counterTelegramBot;
     }
 

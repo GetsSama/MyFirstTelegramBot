@@ -23,5 +23,6 @@ public class BusStopTable {
     @EqualsAndHashCode.Exclude
     private UserTable user;
     private String busStopUrl;
+    private String busStopName;
     private String priorityBuses;
 }

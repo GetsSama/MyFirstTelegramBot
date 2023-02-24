@@ -13,5 +13,6 @@ public class BusStop {
     @EqualsAndHashCode.Exclude
     private User user;
     private String busStopUrl;
+    private String busStopName;
     private Set<String> priorityBuses;
 }
