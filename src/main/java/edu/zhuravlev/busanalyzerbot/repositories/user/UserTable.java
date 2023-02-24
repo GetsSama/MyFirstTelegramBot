@@ -4,6 +4,7 @@ import edu.zhuravlev.busanalyzerbot.repositories.busstop.BusStopTable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.Set;
 public class UserTable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @EqualsAndHashCode.Exclude
     private Long id;
 
     private String name;

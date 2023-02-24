@@ -13,7 +13,7 @@ import java.util.List;
 @Entity
 @Table(name = "bus_stops")
 public class BusStopTable {
-
+    @EqualsAndHashCode.Exclude
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
