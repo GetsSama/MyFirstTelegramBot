@@ -11,7 +11,6 @@ import org.springframework.context.annotation.PropertySource;
 public class BotConfig {
     @Value("${bot.name}")private String botName;
     @Value("${bot.token}")private String token;
-    @Value("${bot.chatId}")private String chatId;
     @Value("${busstop.request}") private String request;
     @Value("${busstop.filepath}") private String path;
 }

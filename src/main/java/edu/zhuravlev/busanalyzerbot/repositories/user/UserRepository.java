@@ -10,9 +10,6 @@ import java.util.List;
 import java.util.Set;
 
 public interface UserRepository extends CrudRepository<UserTable, Long> {
-    UserTable getUserTableByChatId(long chatId);
-    @Transactional
-    @Modifying
-    @Query("UPDATE UserTable as u SET u.busStops = ?1 WHERE u.chatId = ?2")
-    void updateUserTableByChatId(Set<BusStopTable> busStopTables, long chatId);
+    UserTable getUserTableByChatId(String chatId);
+    boolean existsByChatId(String chatId);
 }

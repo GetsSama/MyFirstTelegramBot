@@ -23,7 +23,7 @@ public class UserTable {
 
     private String name;
 
-    private long chatId;
+    private String chatId;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<BusStopTable> busStops;

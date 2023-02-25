@@ -42,7 +42,7 @@ public class DefaultUserService implements UserService {
     }
 
     @Override
-    public User getUserByChatId(long chatId) {
+    public User getUserByChatId(String chatId) {
         UserTable findUser = userRepository.getUserTableByChatId(chatId);
         return userMapper.toEntity(findUser);
     }
@@ -56,5 +56,10 @@ public class DefaultUserService implements UserService {
             userMapper.updateUserTable(updatable, user);
             userRepository.save(updatable);
         }
+    }
+
+    @Override
+    public boolean hasUser(String chatId) {
+        return userRepository.existsByChatId(chatId);
     }
 }

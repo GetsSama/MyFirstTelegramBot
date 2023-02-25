@@ -8,6 +8,7 @@ public interface UserService {
     User getUserById(Long id);
     Set<User> getAllUsers();
     void addUser(User user);
-    User getUserByChatId(long chatId);
+    User getUserByChatId(String chatId);
     void updateUser(User user);
+    boolean hasUser(String chatId);
 }

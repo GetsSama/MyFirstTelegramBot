@@ -13,6 +13,6 @@ import java.util.Set;
 @AllArgsConstructor
 public class User {
     private String name;
-    private long chatId;
+    private String chatId;
     private Set<BusStop> busStops;
 }

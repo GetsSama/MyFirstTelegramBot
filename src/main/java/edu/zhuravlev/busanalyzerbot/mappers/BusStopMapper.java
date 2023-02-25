@@ -10,7 +10,7 @@ import org.mapstruct.factory.Mappers;
 import java.util.Iterator;
 import java.util.Set;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {BusStopMapper.class})
 public interface BusStopMapper {
 
     BusStopMapper INSTANCE = Mappers.getMapper(BusStopMapper.class);
