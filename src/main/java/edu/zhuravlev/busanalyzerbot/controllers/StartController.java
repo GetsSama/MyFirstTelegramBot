@@ -1,10 +1,12 @@
 package edu.zhuravlev.busanalyzerbot.controllers;
 
+import edu.zhuravlev.busanalyzerbot.botcommands.MyCommands;
 import edu.zhuravlev.busanalyzerbot.entities.User;
 import edu.zhuravlev.busanalyzerbot.services.userservice.UserService;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.el.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -12,6 +14,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.util.Arrays;
 import java.util.Set;
 
 @Component
@@ -20,7 +23,6 @@ import java.util.Set;
 public class StartController implements BotController {
     private AbsSender bot;
     private final String helloMessage = "Привет! Это телеграм-бот отслеживающий расписание автобусов на остановках.\nВот список моих команд:\n";
-    private final String addBusStop = "/addBusStop - добавить остановку для отслеживания";
     private UserService userService;
     @Autowired
     public void setBot(AbsSender bot) {
@@ -43,12 +45,26 @@ public class StartController implements BotController {
 
         var message = new SendMessage();
         message.setChatId(chatId);
-        message.setText(helloMessage + addBusStop);
+        message.setText(getAllCommands());
 
         try {
             bot.execute(message);
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private String getAllCommands() {
+        var botCommands = Arrays.stream(MyCommands.values()).map(MyCommands::getCommand).toList();
+        var builder = new StringBuilder(helloMessage);
+
+        for(var command : botCommands) {
+            builder.append(command.getCommand());
+            builder.append(" - ");
+            builder.append(command.getDescription());
+            builder.append("\n");
+        }
+
+        return builder.toString();
     }
 }

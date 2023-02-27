@@ -27,4 +27,5 @@ public class BusTelegramBot extends TelegramLongPollingBot {
     public String getBotUsername() {
         return config.getBotName();
     }
+
 }
