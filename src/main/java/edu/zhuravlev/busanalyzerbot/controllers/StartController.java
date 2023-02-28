@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.el.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -18,6 +19,7 @@ import java.util.Arrays;
 import java.util.Set;
 
 @Component
+@Scope("prototype")
 @NoArgsConstructor
 @AllArgsConstructor
 public class StartController implements BotController {
