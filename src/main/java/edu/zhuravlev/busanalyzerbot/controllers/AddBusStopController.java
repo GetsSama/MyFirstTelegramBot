@@ -3,6 +3,7 @@ package edu.zhuravlev.busanalyzerbot.controllers;
 import busentity.Bus;
 import busparser.BusParser;
 import busparser.DefaultBusParser;
+import edu.zhuravlev.busanalyzerbot.cashed.sessions.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,7 @@ import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 @Component
 @Scope("prototype")
@@ -25,6 +27,8 @@ public class AddBusStopController implements BotController, Runnable{
     private Update update;
     private AbsSender sender;
     private BusParser parser;
+
+    private SessionFactory sessionFactory;
     private boolean onProcess = true;
     private String busStopName;
     private String busStopUrl;
@@ -34,6 +38,10 @@ public class AddBusStopController implements BotController, Runnable{
         this.state = ControllerState.NEW;
     }
 
+    @Autowired
+    public void setSessionFactory(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+    }
     @Autowired
     public void setParser(BusParser parser) {
         this.parser = parser;
@@ -123,6 +131,13 @@ public class AddBusStopController implements BotController, Runnable{
         poll.setOptions(allBusesName);
         poll.setAllowMultipleAnswers(true);
 
+        var returnMessage = send(poll);
+        var result = sessionFactory.newSessionAnswersPoll(returnMessage);
+        try {
+            this.priorityBuses = result.get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private enum ControllerState {
