@@ -12,23 +12,12 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 @Scope("prototype")
 public class AddBusStopController implements BotController, Runnable{
     private ControllerState state;
-    private final Thread sessionThread;
     private Update lastUpdate;
     private AbsSender sender;
+    private boolean onProcess = true;
 
     public AddBusStopController() {
         this.state = ControllerState.NEW;
-        this.sessionThread = new Thread(this);
-        sessionThread.start();
-
-        synchronized (this) {
-            try {
-                sessionThread.wait();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
     }
 
     @Autowired
@@ -44,13 +33,36 @@ public class AddBusStopController implements BotController, Runnable{
 
     @Override
     public void run() {
-        switch (state) {
-            case NEW -> {sendState("First state!");
-                          state = ControllerState.MEDIUM;}
-
-            case MEDIUM -> {sendState("Second state!");
-                            state = ControllerState.FINAL;}
-            case FINAL -> sendState("Third state!");
+        try {
+            while (onProcess) {
+                if (lastUpdate == null)
+                    synchronized (this) {
+                        wait();
+                    }
+                switch (state) {
+                    case NEW -> {
+                        sendState("First state!");
+                        state = ControllerState.MEDIUM;
+                        synchronized (this) {
+                            wait();
+                        }
+                    }
+                    case MEDIUM -> {
+                        sendState("Second state!");
+                        state = ControllerState.FINAL;
+                        synchronized (this) {
+                            wait();
+                        }
+                    }
+                    case FINAL -> {
+                        sendState("Third state!");
+                        onProcess = false;
+                        //Thread.currentThread().notify();
+                    }
+                }
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
