@@ -27,7 +27,7 @@ public class SessionFactory {
     }
 
     public void newSessionAddBusStop(Update update) {
-        var addBusController = this.getAddBotController();
+        var addBusController = getAddBotController();
         var chatId = update.getMessage().getChatId().toString();
 
         var sessionMonitor = new Thread(addBusController);

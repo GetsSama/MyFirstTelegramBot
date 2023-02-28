@@ -35,14 +35,24 @@ public class BotControllerFactory implements BotController{
     public void processUpdate(Update update) {
         if(update.hasMessage()&&update.getMessage().hasText()) {
             String text = update.getMessage().getText();
-            if (text.equals("/start"))
-                context.getBean(StartController.class).processUpdate(update);
-            else if(text.equals("/add_bus_stop")){
-                sessionFactory.newSessionAddBusStop(update);
-            } else {
-                cash.getSessionBean(update.getMessage().getChatId().toString()).getController().processUpdate(update);
+            switch (text) {
+                case "/start" -> context.getBean(StartController.class).processUpdate(update);
+                case "/add_bus_stop" -> sessionFactory.newSessionAddBusStop(update);
+                default -> {
+                    String identifier = getIdentifierFromUpdate(update);
+                    cash.getSessionBean(identifier).getController().processUpdate(update);
+                }
             }
         }
         log.info(update.toString());
+    }
+
+    private String getIdentifierFromUpdate(Update update) {
+        if(update.hasMessage())
+            return update.getMessage().getChatId().toString();
+        else if(update.hasPoll())
+            return update.getPoll().getId().toString();
+        else
+            throw new UnsupportedOperationException("This version supports only Updates with Message or Poll.");
     }
 }

@@ -1,7 +1,10 @@
 package edu.zhuravlev.busanalyzerbot;
 
+import busparser.BusParser;
+import busparser.DefaultBusParser;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
@@ -13,4 +16,9 @@ public class BotConfig {
     @Value("${bot.token}")private String token;
     @Value("${busstop.request}") private String request;
     @Value("${busstop.filepath}") private String path;
+
+    @Bean
+    public BusParser getBusParser() {
+        return new DefaultBusParser();
+    }
 }

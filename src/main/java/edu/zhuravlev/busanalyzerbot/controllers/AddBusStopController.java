@@ -1,23 +1,42 @@
 package edu.zhuravlev.busanalyzerbot.controllers;
 
+import busentity.Bus;
+import busparser.BusParser;
+import busparser.DefaultBusParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethodMessage;
+import org.telegram.telegrambots.meta.api.methods.polls.SendPoll;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
+import java.util.Set;
 
 @Component
 @Scope("prototype")
 public class AddBusStopController implements BotController, Runnable{
     private ControllerState state;
-    private Update lastUpdate;
+    private String chatId;
+    private Update update;
     private AbsSender sender;
+    private BusParser parser;
     private boolean onProcess = true;
+    private String busStopName;
+    private String busStopUrl;
+    private Set<String> priorityBuses;
 
     public AddBusStopController() {
         this.state = ControllerState.NEW;
+    }
+
+    @Autowired
+    public void setParser(BusParser parser) {
+        this.parser = parser;
     }
 
     @Autowired
@@ -27,7 +46,10 @@ public class AddBusStopController implements BotController, Runnable{
 
     @Override
     public synchronized void processUpdate(Update update) {
-        this.lastUpdate = update;
+        if(chatId == null) {
+            this.chatId = update.getMessage().getChatId().toString();
+        }
+        this.update = update;
         notify();
     }
 
@@ -35,27 +57,39 @@ public class AddBusStopController implements BotController, Runnable{
     public void run() {
         try {
             while (onProcess) {
-                if (lastUpdate == null)
+                if (chatId == null)
                     synchronized (this) {
                         wait();
                     }
                 switch (state) {
                     case NEW -> {
-                        sendState("First state!");
-                        state = ControllerState.MEDIUM;
+                        chooseNameState();
+                        state = ControllerState.CHOOSE_NAME;
                         synchronized (this) {
                             wait();
                         }
                     }
-                    case MEDIUM -> {
-                        sendState("Second state!");
-                        state = ControllerState.FINAL;
+                    case CHOOSE_NAME -> {
+                        this.busStopName = update.getMessage().getText();
+                        parseUrlState();
+                        state = ControllerState.PARSE_URL;
                         synchronized (this) {
                             wait();
                         }
+                    }
+                    case PARSE_URL -> {
+                        this.busStopUrl = update.getMessage().getText();
+                        chooseBusesState();
+                        state = ControllerState.CHOOSE_BUSES;
+                        synchronized (this) {
+                            wait();
+                        }
+                    }
+                    case CHOOSE_BUSES -> {
+
                     }
                     case FINAL -> {
-                        sendState("Third state!");
+
                         onProcess = false;
                         //Thread.currentThread().notify();
                     }
@@ -66,19 +100,40 @@ public class AddBusStopController implements BotController, Runnable{
         }
     }
 
-    private void sendState(String state) {
+    private void chooseNameState() {
         var message = new SendMessage();
-        message.setChatId(lastUpdate.getMessage().getChatId().toString());
-        message.setText(state);
+        message.setText("Введите имя для новой остановки");
+        message.setChatId(chatId);
+        send(message);
+    }
 
-        try{
-            sender.execute(message);
-        } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
-        }
+    private void parseUrlState() {
+        var message = new SendMessage();
+        message.setText("Введите URL новой остановки");
+        message.setChatId(chatId);
+    }
+
+    private void chooseBusesState() {
+        var allBuses = parser.parse(busStopUrl);
+        var allBusesName = allBuses.stream().map(Bus::getBusName).toList();
+        var poll = new SendPoll();
+
+        poll.setChatId(chatId);
+        poll.setQuestion("Какие автобусы отслеживать?");
+        poll.setOptions(allBusesName);
+        poll.setAllowMultipleAnswers(true);
+
     }
 
     private enum ControllerState {
-        NEW, MEDIUM, FINAL
+        NEW, CHOOSE_NAME, PARSE_URL, CHOOSE_BUSES, FINAL
+    }
+
+    private Message send(BotApiMethodMessage method) {
+        try {
+            return sender.execute(method);
+        } catch (TelegramApiException e){
+            throw new RuntimeException(e);
+        }
     }
 }
