@@ -3,7 +3,10 @@ package edu.zhuravlev.busanalyzerbot.controllers;
 import busentity.Bus;
 import busparser.BusParser;
 import busparser.DefaultBusParser;
+import edu.zhuravlev.busanalyzerbot.BotConfig;
 import edu.zhuravlev.busanalyzerbot.cashed.sessions.SessionFactory;
+import edu.zhuravlev.busanalyzerbot.entities.BusStop;
+import edu.zhuravlev.busanalyzerbot.services.userservice.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -16,6 +19,9 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
@@ -27,6 +33,8 @@ public class AddBusStopController implements BotController, Runnable{
     private Update update;
     private AbsSender sender;
     private BusParser parser;
+    private UserService userService;
+    private BotConfig botConfig;
 
     private SessionFactory sessionFactory;
     private boolean onProcess = true;
@@ -36,6 +44,21 @@ public class AddBusStopController implements BotController, Runnable{
 
     public AddBusStopController() {
         this.state = ControllerState.NEW;
+    }
+
+    public void setPriorityBuses(Set<String> priorityBuses) {
+        this.priorityBuses = priorityBuses;
+        notify();
+    }
+
+    @Autowired
+    public void setBotConfig(BotConfig botConfig) {
+        this.botConfig = botConfig;
+    }
+
+    @Autowired
+    public void setUserService(UserService userService) {
+        this.userService = userService;
     }
 
     @Autowired
@@ -89,15 +112,13 @@ public class AddBusStopController implements BotController, Runnable{
                         this.busStopUrl = update.getMessage().getText();
                         chooseBusesState();
                         state = ControllerState.CHOOSE_BUSES;
-                        synchronized (this) {
-                            wait();
-                        }
                     }
                     case CHOOSE_BUSES -> {
-
+                        saveAddBusStop();
+                        state = ControllerState.FINAL;
                     }
                     case FINAL -> {
-
+                        goToMainAppState();
                         onProcess = false;
                         //Thread.currentThread().notify();
                     }
@@ -109,20 +130,20 @@ public class AddBusStopController implements BotController, Runnable{
     }
 
     private void chooseNameState() {
-        var message = new SendMessage();
-        message.setText("Введите имя для новой остановки");
-        message.setChatId(chatId);
-        send(message);
+        sendSimpleMessage("Введите имя для новой остановки");
     }
 
     private void parseUrlState() {
-        var message = new SendMessage();
-        message.setText("Введите URL новой остановки");
-        message.setChatId(chatId);
+        sendSimpleMessage("Введите URL новой остановки");
     }
 
     private void chooseBusesState() {
-        var allBuses = parser.parse(busStopUrl);
+        List<Bus> allBuses;
+        if(botConfig.isDebugMode())
+            allBuses = parser.parse(new File(botConfig.getPath()));
+        else
+            allBuses = parser.parse(busStopUrl);
+
         var allBusesName = allBuses.stream().map(Bus::getBusName).toList();
         var poll = new SendPoll();
 
@@ -135,9 +156,27 @@ public class AddBusStopController implements BotController, Runnable{
         var result = sessionFactory.newSessionAnswersPoll(returnMessage);
         try {
             this.priorityBuses = result.get();
-        } catch (ExecutionException | InterruptedException e) {
+        } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void saveAddBusStop() {
+        var addedBusStop = new BusStop();
+        addedBusStop.setBusStopName(busStopName);
+        addedBusStop.setBusStopUrl(busStopUrl);
+        addedBusStop.setPriorityBuses(priorityBuses);
+
+        var user = userService.getUserByChatId(chatId);
+        user.addBusStop(addedBusStop);
+        userService.updateUser(user);
+
+        sendSimpleMessage("Новая остановка добавлена!");
+    }
+
+    private void goToMainAppState() {
+        var user = userService.getUserByChatId(chatId);
+        sendSimpleMessage(user.toString());
     }
 
     private enum ControllerState {
@@ -150,5 +189,12 @@ public class AddBusStopController implements BotController, Runnable{
         } catch (TelegramApiException e){
             throw new RuntimeException(e);
         }
+    }
+
+    private void sendSimpleMessage(String textMessage) {
+        var message = new SendMessage();
+        message.setChatId(chatId);
+        message.setText(textMessage);
+        send(message);
     }
 }

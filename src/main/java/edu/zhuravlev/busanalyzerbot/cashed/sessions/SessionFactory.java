@@ -11,6 +11,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.FutureTask;
 
 @Component
@@ -46,15 +47,13 @@ public class SessionFactory {
         addBusController.processUpdate(update);
     }
 
-    public FutureTask<Set<String>> newSessionAnswersPoll(Message message) {
+    public CompletableFuture<Set<String>> newSessionAnswersPoll(Message message) {
         var answersPoll = getAnswersPollController();
         var identifier = message.getPoll().getId();
 
-        var resultForCaller = new FutureTask<Set<String>>(answersPoll);
-        var sessionMonitor = new Thread(resultForCaller);
-        sessionMonitor.start();
+        var resultForCaller = CompletableFuture.supplyAsync(answersPoll);
 
-        new DefaultSession(cash, identifier, "", answersPoll, sessionMonitor);
+        new DefaultSession(cash, identifier, "", answersPoll, resultForCaller);
         return resultForCaller;
     }
 }

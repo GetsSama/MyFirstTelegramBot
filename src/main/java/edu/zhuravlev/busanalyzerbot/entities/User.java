@@ -15,4 +15,8 @@ public class User {
     private String name;
     private String chatId;
     private Set<BusStop> busStops;
+    public void addBusStop(BusStop busStop) {
+        busStops.add(busStop);
+        busStop.setUser(this);
+    }
 }

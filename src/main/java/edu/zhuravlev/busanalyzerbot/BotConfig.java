@@ -16,6 +16,7 @@ public class BotConfig {
     @Value("${bot.token}")private String token;
     @Value("${busstop.request}") private String request;
     @Value("${busstop.filepath}") private String path;
+    @Value("${bot.debug}") private boolean debugMode;
 
     @Bean
     public BusParser getBusParser() {

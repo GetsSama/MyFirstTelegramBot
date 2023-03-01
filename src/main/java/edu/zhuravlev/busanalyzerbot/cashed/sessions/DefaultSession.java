@@ -4,6 +4,8 @@ import edu.zhuravlev.busanalyzerbot.cashed.cash.SessionCash;
 import edu.zhuravlev.busanalyzerbot.controllers.BotController;
 import lombok.Setter;
 
+import java.util.concurrent.CompletableFuture;
+
 @Setter
 public class DefaultSession implements Session, Runnable{
     private SessionCash cash;
@@ -40,14 +42,19 @@ public class DefaultSession implements Session, Runnable{
 
     @Override
     public void run() {
-        try {
-            synchronized (monitor) {
-                Thread t = (Thread) monitor;
-                t.join();
+        if (monitor instanceof Thread) {
+            try {
+                synchronized (monitor) {
+                    Thread t = (Thread) monitor;
+                    t.join();
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            cash.removeSession(this.identifier);
+        } else {
+            var complFutTask = (CompletableFuture<?>) monitor;
+            complFutTask.thenAccept(s -> cash.removeSession(this.identifier));
         }
-        cash.removeSession(this.identifier);
     }
 }

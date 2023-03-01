@@ -43,6 +43,9 @@ public class BotControllerFactory implements BotController{
                     cash.getSessionBean(identifier).getController().processUpdate(update);
                 }
             }
+        } else {
+            String identifier = getIdentifierFromUpdate(update);
+            cash.getSessionBean(identifier).getController().processUpdate(update);
         }
         log.info(update.toString());
     }
@@ -51,7 +54,7 @@ public class BotControllerFactory implements BotController{
         if(update.hasMessage())
             return update.getMessage().getChatId().toString();
         else if(update.hasPoll())
-            return update.getPoll().getId().toString();
+            return update.getPoll().getId();
         else
             throw new UnsupportedOperationException("This version supports only Updates with Message or Poll.");
     }
