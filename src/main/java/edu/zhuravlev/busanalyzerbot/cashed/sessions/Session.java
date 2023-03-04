@@ -2,8 +2,10 @@ package edu.zhuravlev.busanalyzerbot.cashed.sessions;
 
 import edu.zhuravlev.busanalyzerbot.controllers.BotController;
 
+import java.util.Set;
+
 public interface Session {
     String getIdentifier();
-    String getChatId();
+    Set<String> getIdentifiers();
     BotController getController();
 }

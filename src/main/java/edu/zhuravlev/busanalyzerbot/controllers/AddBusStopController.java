@@ -4,6 +4,7 @@ import busentity.Bus;
 import busparser.BusParser;
 import busparser.DefaultBusParser;
 import edu.zhuravlev.busanalyzerbot.BotConfig;
+import edu.zhuravlev.busanalyzerbot.botcommands.MyCommands;
 import edu.zhuravlev.busanalyzerbot.cashed.sessions.SessionFactory;
 import edu.zhuravlev.busanalyzerbot.controllers.service.BotControllerService;
 import edu.zhuravlev.busanalyzerbot.entities.BusStop;
@@ -26,7 +27,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
-@Component
+@Component("/add_bus_stop")
 @Scope("prototype")
 public class AddBusStopController implements BotController, Runnable{
     private ControllerState state;

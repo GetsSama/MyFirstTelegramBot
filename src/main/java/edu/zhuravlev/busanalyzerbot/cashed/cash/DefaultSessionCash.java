@@ -19,19 +19,19 @@ public class DefaultSessionCash implements SessionCash {
     }
 
     @Override
-    public void cashed(String identifier, Session session) {
-        this.cash.put(identifier, session);
-        log.info("Add in cash: " + identifier);
+    public void cashed(Session session) {
+        this.cash.put(session.getIdentifier(), session);
+        log.info("Add in cash: " + session.getIdentifier());
     }
 
     @Override
-    public Session getSessionBean(String identifier) {
+    public Session getSession(String identifier) {
         return this.cash.get(identifier);
     }
 
     @Override
-    public void removeSession(String identifier) {
-        this.cash.remove(identifier);
-        log.info("Remove from cash: " + identifier);
+    public void removeSession(Session session) {
+        this.cash.remove(session.getIdentifier());
+        log.info("Remove from cash: " + session.getIdentifier());
     }
 }

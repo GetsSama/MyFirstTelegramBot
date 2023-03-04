@@ -7,7 +7,7 @@ public enum MyCommands {
     ADDBUSSTOP(new BotCommand("/add_bus_stop", "Add new bus stop.")),
     HELP(new BotCommand("/help", "Get all available commands with description."));
 
-    private BotCommand command;
+    private final BotCommand command;
     MyCommands(BotCommand command){
         this.command = command;
     }

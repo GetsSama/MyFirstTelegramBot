@@ -10,7 +10,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.Arrays;
 
-@Component
+@Component("/help")
 public class HelpController implements BotController{
     private final String preparedMessage;
     private final AbsSender sender;
