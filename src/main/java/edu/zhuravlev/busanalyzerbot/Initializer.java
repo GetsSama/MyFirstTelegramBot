@@ -9,9 +9,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
-import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.meta.generics.LongPollingBot;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 import java.util.List;
@@ -39,7 +37,7 @@ public class Initializer {
 
     private void setCommands(TelegramLongPollingBot bot) {
         var allCommands = List.of(MyCommands.values());
-        var allBotCommands = allCommands.stream().map(MyCommands::getCommand).toList();
+        var allBotCommands = allCommands.stream().map(MyCommands::getBotCommand).toList();
         var myCommands = new SetMyCommands();
 
         myCommands.setCommands(allBotCommands);

@@ -2,9 +2,8 @@ package edu.zhuravlev.busanalyzerbot.cashed.sessions;
 
 import edu.zhuravlev.busanalyzerbot.cashed.cash.SessionCash;
 import edu.zhuravlev.busanalyzerbot.controllers.AddBusStopController;
-import edu.zhuravlev.busanalyzerbot.controllers.AnswersPollController;
+import edu.zhuravlev.busanalyzerbot.controllers.service.AnswersPollService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -12,7 +11,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.FutureTask;
 
 @Component
 public class SessionFactory {
@@ -32,8 +30,8 @@ public class SessionFactory {
         return context.getBean(AddBusStopController.class);
     }
 
-    private AnswersPollController getAnswersPollController() {
-        return context.getBean(AnswersPollController.class);
+    private AnswersPollService getAnswersPollController() {
+        return context.getBean(AnswersPollService.class);
     }
 
     public void newSessionAddBusStop(Update update) {
@@ -47,9 +45,9 @@ public class SessionFactory {
         addBusController.processUpdate(update);
     }
 
-    public CompletableFuture<Set<String>> newSessionAnswersPoll(Message message) {
+    public CompletableFuture<Set<String>> newSessionAnswersPoll(Message responseAfterSendPoll) {
         var answersPoll = getAnswersPollController();
-        var identifier = message.getPoll().getId();
+        var identifier = responseAfterSendPoll.getPoll().getId();
 
         var resultForCaller = CompletableFuture.supplyAsync(answersPoll);
 

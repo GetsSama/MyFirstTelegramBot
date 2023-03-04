@@ -55,7 +55,7 @@ public class StartController implements BotController {
     }
 
     private String getAllCommands() {
-        var botCommands = Arrays.stream(MyCommands.values()).map(MyCommands::getCommand).toList();
+        var botCommands = Arrays.stream(MyCommands.values()).map(MyCommands::getBotCommand).toList();
         var builder = new StringBuilder(helloMessage);
 
         for(var command : botCommands) {

@@ -5,6 +5,7 @@ import busparser.BusParser;
 import busparser.DefaultBusParser;
 import edu.zhuravlev.busanalyzerbot.BotConfig;
 import edu.zhuravlev.busanalyzerbot.cashed.sessions.SessionFactory;
+import edu.zhuravlev.busanalyzerbot.controllers.service.BotControllerService;
 import edu.zhuravlev.busanalyzerbot.entities.BusStop;
 import edu.zhuravlev.busanalyzerbot.services.userservice.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,7 @@ public class AddBusStopController implements BotController, Runnable{
     private UserService userService;
     private BotConfig botConfig;
 
+    private BotControllerService<Set<String>> answerPollService;
     private SessionFactory sessionFactory;
     private boolean onProcess = true;
     private String busStopName;
@@ -49,6 +51,11 @@ public class AddBusStopController implements BotController, Runnable{
     public void setPriorityBuses(Set<String> priorityBuses) {
         this.priorityBuses = priorityBuses;
         notify();
+    }
+
+    @Autowired
+    public void setAnswerPollService(BotControllerService<Set<String>> answerPollService) {
+        this.answerPollService = answerPollService;
     }
 
     @Autowired

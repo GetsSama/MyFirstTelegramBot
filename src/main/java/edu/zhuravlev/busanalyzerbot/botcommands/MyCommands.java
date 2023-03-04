@@ -12,7 +12,7 @@ public enum MyCommands {
         this.command = command;
     }
 
-    public BotCommand getCommand() {
+    public BotCommand getBotCommand() {
         return this.command;
     }
 
