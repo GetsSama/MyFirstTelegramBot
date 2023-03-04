@@ -2,7 +2,6 @@ package edu.zhuravlev.busanalyzerbot.cashed.cash;
 
 
 import edu.zhuravlev.busanalyzerbot.cashed.sessions.Session;
-import edu.zhuravlev.busanalyzerbot.controllers.BotController;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -20,8 +19,8 @@ public class DefaultSessionCash implements SessionCash {
 
     @Override
     public void cashed(Session session) {
-        this.cash.put(session.getIdentifier(), session);
-        log.info("Add in cash: " + session.getIdentifier());
+        this.cash.put(session.getPrimaryIdentifier(), session);
+        log.info("Add in cash: " + session.getPrimaryIdentifier());
     }
 
     @Override
@@ -31,7 +30,9 @@ public class DefaultSessionCash implements SessionCash {
 
     @Override
     public void removeSession(Session session) {
-        this.cash.remove(session.getIdentifier());
-        log.info("Remove from cash: " + session.getIdentifier());
+        var identifiers = session.getIdentifiers();
+        for (var id : identifiers)
+            cash.remove(id);
+        log.info("Session " + session.getPrimaryIdentifier() + " remove from cash.");
     }
 }

@@ -5,7 +5,9 @@ import busparser.BusParser;
 import busparser.DefaultBusParser;
 import edu.zhuravlev.busanalyzerbot.BotConfig;
 import edu.zhuravlev.busanalyzerbot.botcommands.MyCommands;
+import edu.zhuravlev.busanalyzerbot.cashed.sessions.Session;
 import edu.zhuravlev.busanalyzerbot.cashed.sessions.SessionFactory;
+import edu.zhuravlev.busanalyzerbot.cashed.sessions.Sessional;
 import edu.zhuravlev.busanalyzerbot.controllers.service.BotControllerService;
 import edu.zhuravlev.busanalyzerbot.entities.BusStop;
 import edu.zhuravlev.busanalyzerbot.services.userservice.UserService;
@@ -29,7 +31,7 @@ import java.util.concurrent.ExecutionException;
 
 @Component("/add_bus_stop")
 @Scope("prototype")
-public class AddBusStopController implements BotController, Runnable{
+public class AddBusStopController implements BotController, Runnable, Sessional {
     private ControllerState state;
     private String chatId;
     private Update update;

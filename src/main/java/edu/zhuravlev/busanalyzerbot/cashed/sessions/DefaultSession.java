@@ -2,39 +2,45 @@ package edu.zhuravlev.busanalyzerbot.cashed.sessions;
 
 import edu.zhuravlev.busanalyzerbot.cashed.cash.SessionCash;
 import edu.zhuravlev.busanalyzerbot.controllers.BotController;
-import lombok.Setter;
 
-import java.util.concurrent.CompletableFuture;
+import java.util.Set;
 
-@Setter
 public class DefaultSession implements Session, Runnable{
     private SessionCash cash;
-    private String identifier;
-    private String chatId;
+    private String primaryIdentifier;
     private BotController controller;
-    private Object monitor;
+    private Thread joiningControllerThread;
 
-    public DefaultSession(SessionCash cash, String identifier, String chatId, BotController controller ,Object monitor) {
-        this.cash = cash;
-        this.identifier = identifier;
-        this.chatId = chatId;
+    private Set<String> foreignIdentifiers;
+
+    public DefaultSession() {}
+
+    public void setPrimaryIdentifier(String primaryIdentifier) {
+        this.primaryIdentifier = primaryIdentifier;
+    }
+
+    public void setController(BotController controller) {
         this.controller = controller;
-        this.monitor = monitor;
+    }
 
-        this.cash.cashed(this.identifier, this);
-        new Thread(this).start();
+    public void setJoiningControllerThread(Thread joiningControllerThread) {
+        this.joiningControllerThread = joiningControllerThread;
     }
 
     @Override
-    public String getIdentifier() {
-        return this.identifier;
+    public String getPrimaryIdentifier() {
+        return this.primaryIdentifier;
     }
 
     @Override
-    public String getChatId() {
-        return this.chatId;
+    public Set<String> getIdentifiers() {
+        this.foreignIdentifiers.add(primaryIdentifier);
+        return foreignIdentifiers;
     }
-
+    @Override
+    public void addForeignIdentifier(String identifier) {
+        this.foreignIdentifiers.add(identifier);
+    }
     @Override
     public BotController getController() {
         return this.controller;
@@ -42,19 +48,14 @@ public class DefaultSession implements Session, Runnable{
 
     @Override
     public void run() {
-        if (monitor instanceof Thread) {
-            try {
-                synchronized (monitor) {
-                    Thread t = (Thread) monitor;
-                    t.join();
+        cash.cashed(this);
+        try {
+                synchronized (joiningControllerThread) {
+                    joiningControllerThread.join();
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            cash.removeSession(this.identifier);
-        } else {
-            var complFutTask = (CompletableFuture<?>) monitor;
-            complFutTask.thenAccept(s -> cash.removeSession(this.identifier));
-        }
+            cash.removeSession(this);
     }
 }

@@ -5,7 +5,8 @@ import edu.zhuravlev.busanalyzerbot.controllers.BotController;
 import java.util.Set;
 
 public interface Session {
-    String getIdentifier();
+    String getPrimaryIdentifier();
     Set<String> getIdentifiers();
+    void addForeignIdentifier(String identifier);
     BotController getController();
 }
