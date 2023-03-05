@@ -7,7 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.polls.PollOption;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Component
+@Component("answerPollService")
 public class AnswersPollService implements BotControllerService<Set<String>> {
     private Set<String> parsePriorityBuses(Update update) {
         if(update.hasPoll()) {

@@ -6,7 +6,6 @@ import edu.zhuravlev.busanalyzerbot.services.userservice.UserService;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -16,17 +15,16 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.util.Arrays;
 import java.util.Set;
 
-@Component
-@Scope("prototype")
+@Component("/start")
 @NoArgsConstructor
 @AllArgsConstructor
 public class StartController implements BotController {
-    private AbsSender bot;
+    private AbsSender sender;
     private final String helloMessage = "Привет! Это телеграм-бот отслеживающий расписание автобусов на остановках.\nВот список моих команд:\n";
     private UserService userService;
     @Autowired
-    public void setBot(AbsSender bot) {
-        this.bot = bot;
+    public void setSender(AbsSender sender) {
+        this.sender = sender;
     }
     @Autowired
     public void setUserService(UserService userService) {
@@ -48,7 +46,7 @@ public class StartController implements BotController {
         message.setText(getAllCommands());
 
         try {
-            bot.execute(message);
+            sender.execute(message);
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
         }

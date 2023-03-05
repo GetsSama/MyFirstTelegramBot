@@ -2,24 +2,22 @@ package edu.zhuravlev.busanalyzerbot.router;
 
 import edu.zhuravlev.busanalyzerbot.botcommands.MyCommands;
 import edu.zhuravlev.busanalyzerbot.cashed.sessions.DefaultSession;
-import edu.zhuravlev.busanalyzerbot.cashed.sessions.SessionFactory;
+import edu.zhuravlev.busanalyzerbot.cashed.sessions.SessionService;
 import edu.zhuravlev.busanalyzerbot.cashed.sessions.Sessional;
 import edu.zhuravlev.busanalyzerbot.controllers.BotControllerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
-import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
 public class DefaultUpdateRouter implements UpdateRouter{
     private BotControllerFactory controllerFactory;
-    private SessionFactory sessionFactory;
+    private SessionService sessionService;
     private final Set<String> commands;
 
     public DefaultUpdateRouter() {
@@ -35,8 +33,8 @@ public class DefaultUpdateRouter implements UpdateRouter{
     }
 
     @Autowired
-    public void setSessionFactory(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
+    public void setSessionFactory(SessionService sessionService) {
+        this.sessionService = sessionService;
     }
 
 
@@ -44,20 +42,27 @@ public class DefaultUpdateRouter implements UpdateRouter{
     public void process(Update update) {
         if(update.hasMessage()) {
             String message = update.getMessage().getText();
+
             if(isBotCommand(message)) {
                 var botController = controllerFactory.getBotController(message);
-                if(botController instanceof Sessional) {
-                    var session = sessionFactory.createSession(DefaultSession.class);
-                    var controllerThread = new Thread((Runnable)botController);
 
+                if(botController instanceof Sessional) {
+                    var session = (DefaultSession) sessionService.createSession(DefaultSession.class);
+                    var controllerThread = new Thread((Runnable) botController);
+                    session.setPrimaryIdentifier(getIdentifierFromUpdate(update));
+                    session.setController(botController);
+                    session.setJoiningControllerThread(controllerThread);
+                    var sessionThread = new Thread(session);
+
+                    controllerThread.start();
+                    sessionThread.start();
                 }
+                botController.processUpdate(update);
+                return;
             }
         }
-    }
-
-    @Override
-    public void redirect(String from, String to) {
-
+        var botControllerFromId = sessionService.getSessionById(getIdentifierFromUpdate(update));
+        botControllerFromId.getController().processUpdate(update);
     }
 
     private String getIdentifierFromUpdate(Update update) {

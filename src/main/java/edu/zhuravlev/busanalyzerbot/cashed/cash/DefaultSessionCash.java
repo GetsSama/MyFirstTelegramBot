@@ -22,7 +22,11 @@ public class DefaultSessionCash implements SessionCash {
         this.cash.put(session.getPrimaryIdentifier(), session);
         log.info("Add in cash: " + session.getPrimaryIdentifier());
     }
-
+    @Override
+    public void cashed(String foreignId, Session session) {
+        this.cash.put(foreignId, session);
+        log.info("Add in cash: " + session.getPrimaryIdentifier() + " with foreign id - " + foreignId);
+    }
     @Override
     public Session getSession(String identifier) {
         return this.cash.get(identifier);

@@ -18,7 +18,6 @@ public class HelpController implements BotController{
     @Autowired
     public HelpController(AbsSender sender) {
         var commands = Arrays.asList(MyCommands.values());
-        commands.remove(MyCommands.START);
         var builder = new StringBuilder();
 
         builder.append("There is fully list of this bot commands:\n");
