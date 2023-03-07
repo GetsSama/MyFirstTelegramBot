@@ -62,7 +62,8 @@ public class DefaultUpdateRouter implements UpdateRouter{
             }
         }
         var botControllerFromId = sessionService.getSessionById(getIdentifierFromUpdate(update));
-        botControllerFromId.getController().processUpdate(update);
+        if(botControllerFromId!=null)
+            botControllerFromId.getController().processUpdate(update);
     }
 
     private String getIdentifierFromUpdate(Update update) {

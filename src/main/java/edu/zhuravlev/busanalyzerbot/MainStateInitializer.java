@@ -32,7 +32,10 @@ public class MainStateInitializer {
     public void init() {
         if(!initAll) {
             var users = userService.getAllUsers();
-            users.parallelStream().forEach(this::createMainSession);
+            if(users!=null) {
+                users.parallelStream().forEach(this::createMainSession);
+                initAll = true;
+            }
         }
     }
 

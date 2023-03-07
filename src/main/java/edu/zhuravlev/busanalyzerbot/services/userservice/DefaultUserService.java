@@ -26,8 +26,8 @@ public class DefaultUserService implements UserService {
 
     @Override
     public Set<User> getAllUsers() {
-        var findUserTables = (Set<UserTable>) userRepository.findAll();
-        var users = new HashSet<User>(findUserTables.size());
+        var findUserTables = userRepository.findAll();
+        var users = new HashSet<User>();
 
         for(var user : findUserTables)
             users.add(userMapper.toEntity(user));

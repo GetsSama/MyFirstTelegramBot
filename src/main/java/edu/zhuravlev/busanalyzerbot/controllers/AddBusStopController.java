@@ -105,18 +105,18 @@ public class AddBusStopController implements BotController, Sessional {
                 }
                 case CHOOSE_BUSES -> {
                     saveAddBusStop();
-                    state = ControllerState.FINAL;
-                }
-                case FINAL -> {
-                    goToMainAppState();
                     onProcess = false;
-                    //Thread.currentThread().notify();
                 }
             }
         }
     }
 
     private void chooseNameState() {
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         sendSimpleMessage("Введите имя для новой остановки");
     }
 
@@ -160,13 +160,8 @@ public class AddBusStopController implements BotController, Sessional {
         sendSimpleMessage("Новая остановка добавлена!");
     }
 
-    private void goToMainAppState() {
-        var user = userService.getUserByChatId(chatId);
-        sendSimpleMessage(user.toString());
-    }
-
     private enum ControllerState {
-        NEW, CHOOSE_NAME, PARSE_URL, CHOOSE_BUSES, FINAL
+        NEW, CHOOSE_NAME, PARSE_URL, CHOOSE_BUSES
     }
 
     private Message send(BotApiMethodMessage method) {

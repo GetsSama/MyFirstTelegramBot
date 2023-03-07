@@ -9,9 +9,6 @@ import java.util.List;
 
 @Component
 public class ScheduleIllustratorImpl implements ScheduleIllustrator{
-
-
-
     @Override
     public String illustrateAll(List<Bus> buses) {
         StringBuilder builder = new StringBuilder(buses.size() * 2);

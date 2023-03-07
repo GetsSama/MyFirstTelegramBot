@@ -2,6 +2,7 @@ package edu.zhuravlev.busanalyzerbot.cashed.sessions;
 
 import edu.zhuravlev.busanalyzerbot.cashed.cash.SessionCash;
 import edu.zhuravlev.busanalyzerbot.controllers.BotController;
+import edu.zhuravlev.busanalyzerbot.controllers.MainStateController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -23,6 +24,8 @@ public class DefaultSession extends AbstractSession{
     @Override
     public void run() {
         cash.removeSession(mainSession);
+        var mainController = (MainStateController)mainSession.getController();
+        mainController.pause();
         cash.cashed(this);
         try {
                 synchronized (joiningControllerThread) {
@@ -33,5 +36,6 @@ public class DefaultSession extends AbstractSession{
             }
         cash.removeSession(this);
         cash.cashed(mainSession);
+        mainController.resume();
     }
 }

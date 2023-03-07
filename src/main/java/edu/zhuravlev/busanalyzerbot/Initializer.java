@@ -18,6 +18,12 @@ import java.util.List;
 @Component
 public class Initializer {
     private TelegramLongPollingBot bot;
+    private MainStateInitializer initializer;
+
+    @Autowired
+    public void setInitializer(MainStateInitializer initializer) {
+        this.initializer = initializer;
+    }
 
     @Autowired
     public void setBot(TelegramLongPollingBot telegramBot) {
@@ -30,6 +36,8 @@ public class Initializer {
             TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
             telegramBotsApi.registerBot(bot);
             setCommands(bot);
+            initializer.init();
+
         } catch (TelegramApiException e) {
             log.error(e.getMessage());
         }

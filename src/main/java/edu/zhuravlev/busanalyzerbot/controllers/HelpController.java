@@ -17,7 +17,7 @@ public class HelpController implements BotController{
 
     @Autowired
     public HelpController(AbsSender sender) {
-        var commands = Arrays.asList(MyCommands.values());
+        var commands = MyCommands.values();
         var builder = new StringBuilder();
 
         builder.append("There is fully list of this bot commands:\n");
@@ -25,7 +25,7 @@ public class HelpController implements BotController{
             builder.append(command.getBotCommand().getCommand());
             builder.append(" - ");
             builder.append(command.getBotCommand().getDescription());
-            builder.append(";\n");
+            builder.append("\n");
         }
 
         this.preparedMessage = builder.toString();
