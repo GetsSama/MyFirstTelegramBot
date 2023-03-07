@@ -27,7 +27,7 @@ import java.util.concurrent.ExecutionException;
 
 @Component("/add_bus_stop")
 @Scope("prototype")
-public class AddBusStopController implements BotController, Runnable, Sessional {
+public class AddBusStopController implements BotController, Sessional {
     private ControllerState state;
     private String chatId;
     private Update update;

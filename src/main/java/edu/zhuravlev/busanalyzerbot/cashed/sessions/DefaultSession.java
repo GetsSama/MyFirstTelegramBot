@@ -11,55 +11,18 @@ import java.util.Set;
 
 @Component
 @Scope("prototype")
-public class DefaultSession implements Session, Runnable{
-    private SessionCash cash;
-    private String primaryIdentifier;
-    private BotController controller;
-    private Thread joiningControllerThread;
-    private final Set<String> foreignIdentifiers = new HashSet<>();
+public class DefaultSession extends AbstractSession{
+    private Session mainSession;
 
-    public DefaultSession() {}
-
+    @Override
     public void setPrimaryIdentifier(String primaryIdentifier) {
-        this.primaryIdentifier = primaryIdentifier;
-    }
-
-    public void setController(BotController controller) {
-        this.controller = controller;
-    }
-
-    public void setJoiningControllerThread(Thread joiningControllerThread) {
-        this.joiningControllerThread = joiningControllerThread;
-    }
-
-    @Autowired
-    public void setCash(SessionCash cash) {
-        this.cash = cash;
-    }
-
-    @Override
-    public String getPrimaryIdentifier() {
-        return this.primaryIdentifier;
-    }
-
-    @Override
-    public Set<String> getIdentifiers() {
-        this.foreignIdentifiers.add(primaryIdentifier);
-        return foreignIdentifiers;
-    }
-
-    @Override
-    public void addForeignIdentifier(String identifier) {
-        this.foreignIdentifiers.add(identifier);
-    }
-
-    @Override
-    public BotController getController() {
-        return this.controller;
+        super.setPrimaryIdentifier(primaryIdentifier);
+        this.mainSession = cash.getSession(getPrimaryIdentifier());
     }
 
     @Override
     public void run() {
+        cash.removeSession(mainSession);
         cash.cashed(this);
         try {
                 synchronized (joiningControllerThread) {
@@ -68,6 +31,7 @@ public class DefaultSession implements Session, Runnable{
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            cash.removeSession(this);
+        cash.removeSession(this);
+        cash.cashed(mainSession);
     }
 }

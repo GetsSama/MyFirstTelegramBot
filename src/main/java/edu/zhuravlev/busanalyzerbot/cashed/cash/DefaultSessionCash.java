@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 @Slf4j
@@ -14,7 +15,7 @@ public class DefaultSessionCash implements SessionCash {
     private Map<String, Session> cash;
 
     public DefaultSessionCash() {
-        this.cash = new HashMap<>();
+        this.cash = new ConcurrentHashMap<>();
     }
 
     @Override

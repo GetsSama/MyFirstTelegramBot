@@ -1,5 +1,6 @@
 package edu.zhuravlev.busanalyzerbot.controllers;
 
+import edu.zhuravlev.busanalyzerbot.MainStateInitializer;
 import edu.zhuravlev.busanalyzerbot.botcommands.MyCommands;
 import edu.zhuravlev.busanalyzerbot.entities.User;
 import edu.zhuravlev.busanalyzerbot.services.userservice.UserService;
@@ -22,6 +23,12 @@ public class StartController implements BotController {
     private AbsSender sender;
     private final String helloMessage = "Привет! Это телеграм-бот отслеживающий расписание автобусов на остановках.\nВот список моих команд:\n";
     private UserService userService;
+    private MainStateInitializer initializer;
+
+    @Autowired
+    public void setInitializer(MainStateInitializer initializer) {
+        this.initializer = initializer;
+    }
     @Autowired
     public void setSender(AbsSender sender) {
         this.sender = sender;
@@ -38,8 +45,10 @@ public class StartController implements BotController {
 
         var newUser = new User(userName, chatId, Set.of());
 
-        if(!userService.hasUser(chatId))
+        if(!userService.hasUser(chatId)) {
             userService.addUser(newUser);
+            initializer.initNew(newUser);
+        }
 
         var message = new SendMessage();
         message.setChatId(chatId);

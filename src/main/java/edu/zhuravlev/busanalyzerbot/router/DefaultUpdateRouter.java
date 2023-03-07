@@ -48,7 +48,7 @@ public class DefaultUpdateRouter implements UpdateRouter{
 
                 if(botController instanceof Sessional) {
                     var session = (DefaultSession) sessionService.createSession(DefaultSession.class);
-                    var controllerThread = new Thread((Runnable) botController);
+                    var controllerThread = new Thread((Sessional)botController);
                     session.setPrimaryIdentifier(getIdentifierFromUpdate(update));
                     session.setController(botController);
                     session.setJoiningControllerThread(controllerThread);
