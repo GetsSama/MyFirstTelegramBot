@@ -5,6 +5,7 @@ import edu.zhuravlev.busanalyzerbot.cashed.sessions.DefaultSession;
 import edu.zhuravlev.busanalyzerbot.cashed.sessions.SessionService;
 import edu.zhuravlev.busanalyzerbot.cashed.sessions.Sessional;
 import edu.zhuravlev.busanalyzerbot.controllers.BotControllerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -15,6 +16,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
+@Slf4j
 public class DefaultUpdateRouter implements UpdateRouter{
     private BotControllerFactory controllerFactory;
     private SessionService sessionService;
@@ -56,6 +58,13 @@ public class DefaultUpdateRouter implements UpdateRouter{
 
                     controllerThread.start();
                     sessionThread.start();
+                    while(controllerThread.getState() != Thread.State.WAITING) {
+                        try {
+                            Thread.sleep(10);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
                 }
                 botController.processUpdate(update);
                 return;
@@ -71,6 +80,8 @@ public class DefaultUpdateRouter implements UpdateRouter{
             return update.getMessage().getChatId().toString();
         if(update.hasPoll())
             return update.getPoll().getId();
+        if(update.hasCallbackQuery())
+            return update.getCallbackQuery().getFrom().getId().toString();
         else
             throw new UnsupportedOperationException("This version supports only Updates with Message or Poll.");
     }

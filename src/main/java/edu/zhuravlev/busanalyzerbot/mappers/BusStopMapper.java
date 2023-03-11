@@ -4,6 +4,7 @@ import edu.zhuravlev.busanalyzerbot.entities.BusStop;
 import edu.zhuravlev.busanalyzerbot.repositories.busstop.BusStopTable;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 
@@ -23,6 +24,9 @@ public interface BusStopMapper {
     @Mapping(target = "priorityBuses", expression = "java(getStringPriorityBusesFromList(busStop.getPriorityBuses()))")
     @Mapping(target = "user", ignore = true)
     BusStopTable toTable(BusStop busStop);
+    @Mapping(target = "priorityBuses", expression = "java(getStringPriorityBusesFromList(updater.getPriorityBuses()))")
+    @Mapping(target = "user", ignore = true)
+    void updateBusStopTable(@MappingTarget BusStopTable updatable, BusStop updater);
 
     default Set<String> getListPriorityBusesFromString(String buses) {
             String[] busesNames = buses.split(splitter);

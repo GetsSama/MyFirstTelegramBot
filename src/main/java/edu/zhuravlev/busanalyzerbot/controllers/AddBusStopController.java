@@ -35,7 +35,6 @@ public class AddBusStopController implements BotController, Sessional {
     private BusParser parser;
     private UserService userService;
     private BotConfig botConfig;
-
     private BotControllerService<Set<String>> answerPollService;
     private SessionService sessionService;
     private boolean onProcess = true;

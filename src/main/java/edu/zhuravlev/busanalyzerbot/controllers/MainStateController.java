@@ -90,7 +90,7 @@ public class MainStateController implements BotController, Sessional {
         try {
             while(true) {
                 if(isPaused) {
-                    hideButtons("Edit mode");
+                    hideButtons("Редактирование");
                     synchronized (this) {
                         wait();
                     }
@@ -142,7 +142,7 @@ public class MainStateController implements BotController, Sessional {
             var message = new SendMessage();
             keyboard.setKeyboard(buttons);
             keyboard.setIsPersistent(true);
-            message.setText("Choose:");
+            message.setText("Выберите остановку:");
             message.setChatId(chatId);
             message.setReplyMarkup(keyboard);
 
@@ -177,8 +177,17 @@ public class MainStateController implements BotController, Sessional {
             if(busStop.getBusStopName().equals(busStopName))
                 chosenBusStop = busStop;
         }
-        if(chosenBusStop==null)
-            throw new RuntimeException("No bus stops with name - " + busStopName);
+        if(chosenBusStop==null) {
+            var message = new SendMessage();
+            message.setChatId(chatId);
+            message.setText("Остановка с названием \"" + busStopName + "\" не найдена!");
+            try {
+                sender.execute(message);
+            } catch (TelegramApiException e) {
+                throw new RuntimeException(e);
+            }
+            return;
+        }
 
         var priorityBusesName = chosenBusStop.getPriorityBuses();
         List<Bus> allBuses;
