@@ -46,7 +46,7 @@ public class MainStateInitializer {
     private void createMainSession(User user) {
         var session = (MainSession)sessionService.createSession(MainSession.class);
         var mainController = (MainStateController)botControllerFactory.getBotController("main");
-        var controllerThread = new Thread((Sessional)mainController);
+        var controllerThread = new Thread(mainController);
 
         session.setPrimaryIdentifier(user.getChatId());
         session.setController(mainController);

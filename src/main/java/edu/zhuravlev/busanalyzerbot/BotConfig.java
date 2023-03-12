@@ -2,11 +2,16 @@ package edu.zhuravlev.busanalyzerbot;
 
 import busparser.BusParser;
 import busparser.DefaultBusParser;
+import edu.zhuravlev.busanalyzerbot.botcommands.MyCommands;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @Data
@@ -17,9 +22,17 @@ public class BotConfig {
     @Value("${busstop.request}") private String request;
     @Value("${busstop.filepath}") private String path;
     @Value("${bot.debug}") private boolean debugMode;
+    @Value("${bot.helloMessage}") private String helloMessage;
 
     @Bean
-    public BusParser getBusParser() {
+    public BusParser busParser() {
         return new DefaultBusParser();
+    }
+
+    @Bean
+    public List<BotCommand> botCommands() {
+        return Arrays.stream(MyCommands.values())
+                .map(MyCommands::getBotCommand)
+                .toList();
     }
 }

@@ -27,22 +27,19 @@ import java.util.concurrent.ExecutionException;
 
 @Component("/add_bus_stop")
 @Scope("prototype")
-public class AddBusStopController implements BotController, Sessional {
+public class AddBusStopController extends AbstractSessionalBotController{
     private ControllerState state;
-    private String chatId;
-    private Update update;
-    private AbsSender sender;
     private BusParser parser;
     private UserService userService;
     private BotConfig botConfig;
     private BotControllerService<Set<String>> answerPollService;
-    private SessionService sessionService;
     private boolean onProcess = true;
     private String busStopName;
     private String busStopUrl;
     private Set<String> priorityBuses;
 
     public AddBusStopController() {
+        super();
         this.state = ControllerState.NEW;
     }
     @Autowired
@@ -59,25 +56,8 @@ public class AddBusStopController implements BotController, Sessional {
         this.userService = userService;
     }
     @Autowired
-    public void setSessionFactory(SessionService sessionService) {
-        this.sessionService = sessionService;
-    }
-    @Autowired
     public void setParser(BusParser parser) {
         this.parser = parser;
-    }
-    @Autowired
-    private void setSender (AbsSender sender) {
-        this.sender = sender;
-    }
-
-    @Override
-    public synchronized void processUpdate(Update update) {
-        if(chatId == null) {
-            this.chatId = update.getMessage().getChatId().toString();
-        }
-        this.update = update;
-        notify();
     }
 
     @Override
@@ -92,13 +72,13 @@ public class AddBusStopController implements BotController, Sessional {
                     waitUpdate();
                 }
                 case CHOOSE_NAME -> {
-                    this.busStopName = update.getMessage().getText();
+                    this.busStopName = lastUpdate.getMessage().getText();
                     parseUrlState();
                     state = ControllerState.PARSE_URL;
                     waitUpdate();
                 }
                 case PARSE_URL -> {
-                    this.busStopUrl = update.getMessage().getText();
+                    this.busStopUrl = lastUpdate.getMessage().getText();
                     chooseBusesState();
                     state = ControllerState.CHOOSE_BUSES;
                 }
@@ -143,7 +123,7 @@ public class AddBusStopController implements BotController, Sessional {
 
         sessionService.redirectSession(chatId, identifierPoll);
         waitUpdate();
-        this.priorityBuses = answerPollService.getProcessUpdateResult(update);
+        this.priorityBuses = answerPollService.getProcessUpdateResult(lastUpdate);
     }
 
     private void saveAddBusStop() {
@@ -161,28 +141,5 @@ public class AddBusStopController implements BotController, Sessional {
 
     private enum ControllerState {
         NEW, CHOOSE_NAME, PARSE_URL, CHOOSE_BUSES
-    }
-
-    private Message send(BotApiMethodMessage method) {
-        try {
-            return sender.execute(method);
-        } catch (TelegramApiException e){
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void sendSimpleMessage(String textMessage) {
-        var message = new SendMessage();
-        message.setChatId(chatId);
-        message.setText(textMessage);
-        send(message);
-    }
-
-    private synchronized void waitUpdate() {
-        try {
-            wait();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

@@ -23,24 +23,10 @@ import java.util.List;
 
 @Component("/delete")
 @Scope("prototype")
-public class DeleteBusStopController implements BotController, Sessional {
-    private AbsSender sender;
+public class DeleteBusStopController extends AbstractSessionalBotController {
     private UserService userService;
     private BusStopService busStopService;
-    private Update lastUpdate;
-    private String chatId;
     private User user;
-    private SessionService sessionService;
-    private String deletableBusName;
-    private BusStop deletableBusStop;
-
-    @Override
-    public synchronized void processUpdate(Update update) {
-        if(this.chatId==null)
-            this.chatId = update.getMessage().getChatId().toString();
-        this.lastUpdate = update;
-        notify();
-    }
 
     @Override
     public void run() {
@@ -50,20 +36,12 @@ public class DeleteBusStopController implements BotController, Sessional {
     }
 
     @Autowired
-    public void setSender(AbsSender sender) {
-        this.sender = sender;
-    }
-    @Autowired
     public void setUserService(UserService userService) {
         this.userService = userService;
     }
     @Autowired
     public void setBusStopService(BusStopService busStopService) {
         this.busStopService = busStopService;
-    }
-    @Autowired
-    public void setSessionService(SessionService sessionService) {
-        this.sessionService = sessionService;
     }
 
     private void deleteBusStop() {
@@ -99,31 +77,12 @@ public class DeleteBusStopController implements BotController, Sessional {
         sessionService.redirectSession(chatId, callBackMessage.getFrom().getId().toString());
         waitUpdate();
         int busStopPosition = Integer.parseInt(lastUpdate.getCallbackQuery().getData());
-        deletableBusName = busStopsNames.get(busStopPosition);
-        deletableBusStop = user.getBusStops()
+        BusStop deletableBusStop = user.getBusStops()
                 .stream()
-                .filter(b -> b.getBusStopName().equals(deletableBusName))
+                .filter(b -> b.getBusStopName().equals(busStopsNames.get(busStopPosition)))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("User with chat id: " + user.getChatId() + " do not have bus stop with name \"" + deletableBusName + "\""));
+                .orElseThrow(() -> new RuntimeException("User with chat id: " + user.getChatId() + " do not have bus stop with name \"" + busStopsNames.get(busStopPosition) + "\""));
 
         busStopService.deleteBusStop(deletableBusStop);
-    }
-
-    private void waitUpdate() {
-        try {
-            synchronized (this) {
-                wait();
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private Message send(BotApiMethodMessage method) {
-        try {
-            return sender.execute(method);
-        } catch (TelegramApiException e){
-            throw new RuntimeException(e);
-        }
     }
 }

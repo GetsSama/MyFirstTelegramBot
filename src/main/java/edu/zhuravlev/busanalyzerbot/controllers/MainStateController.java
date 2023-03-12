@@ -3,7 +3,6 @@ package edu.zhuravlev.busanalyzerbot.controllers;
 import busentity.Bus;
 import busparser.BusParser;
 import edu.zhuravlev.busanalyzerbot.BotConfig;
-import edu.zhuravlev.busanalyzerbot.cashed.sessions.Sessional;
 import edu.zhuravlev.busanalyzerbot.entities.BusStop;
 import edu.zhuravlev.busanalyzerbot.entities.User;
 import edu.zhuravlev.busanalyzerbot.illustrator.ScheduleIllustrator;
@@ -17,8 +16,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
-import org.telegram.telegrambots.meta.bots.AbsSender;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -27,10 +24,7 @@ import java.util.List;
 
 @Component("main")
 @Scope("prototype")
-public class MainStateController implements BotController, Sessional {
-    private AbsSender sender;
-    private Update lastUpdate;
-    private String chatId;
+public class MainStateController extends AbstractSessionalBotController {
     private boolean isPaused = false;
     private boolean isModified = true;
     private UserService userService;
@@ -38,10 +32,6 @@ public class MainStateController implements BotController, Sessional {
     private ScheduleIllustrator illustrator;
     private BusParser parser;
     private BotConfig botConfig;
-
-    public void setChatId(String chatId) {
-        this.chatId = chatId;
-    }
 
     @Autowired
     public void setBotConfig(BotConfig botConfig) {
@@ -59,19 +49,8 @@ public class MainStateController implements BotController, Sessional {
     }
 
     @Autowired
-    public void setSender(AbsSender sender) {
-        this.sender = sender;
-    }
-
-    @Autowired
     public void setUserService(UserService userService) {
         this.userService = userService;
-    }
-
-    @Override
-    public synchronized void processUpdate(Update update) {
-        this.lastUpdate = update;
-        notify();
     }
 
     public synchronized void pause() {
@@ -83,6 +62,11 @@ public class MainStateController implements BotController, Sessional {
         isPaused = false;
         isModified = true;
         notify();
+    }
+
+    @Override
+    public void setChatId(String chatId) {
+        super.setChatId(chatId);
     }
 
     @Override
@@ -145,12 +129,7 @@ public class MainStateController implements BotController, Sessional {
             message.setText("Выберите остановку:");
             message.setChatId(chatId);
             message.setReplyMarkup(keyboard);
-
-            try {
-                sender.execute(message);
-            } catch (TelegramApiException e) {
-                throw new RuntimeException(e);
-            }
+            send(message);
         }
     }
 
@@ -162,12 +141,7 @@ public class MainStateController implements BotController, Sessional {
         message.setText(text);
         message.setChatId(chatId);
         message.setReplyMarkup(hideKeyboard);
-
-        try{
-            sender.execute(message);
-        } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
-        }
+        send(message);
     }
 
     private void processButton(Update update) {
@@ -178,14 +152,7 @@ public class MainStateController implements BotController, Sessional {
                 chosenBusStop = busStop;
         }
         if(chosenBusStop==null) {
-            var message = new SendMessage();
-            message.setChatId(chatId);
-            message.setText("Остановка с названием \"" + busStopName + "\" не найдена!");
-            try {
-                sender.execute(message);
-            } catch (TelegramApiException e) {
-                throw new RuntimeException(e);
-            }
+            sendSimpleMessage("Остановка с названием \"" + busStopName + "\" не найдена!");
             return;
         }
 
@@ -207,11 +174,6 @@ public class MainStateController implements BotController, Sessional {
         message.setChatId(chatId);
         message.setText(formatMessage);
         message.setParseMode("HTML");
-
-        try {
-            sender.execute(message);
-        } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
-        }
+        send(message);
     }
 }

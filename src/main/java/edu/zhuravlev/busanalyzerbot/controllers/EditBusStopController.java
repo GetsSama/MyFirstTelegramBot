@@ -11,7 +11,9 @@ import edu.zhuravlev.busanalyzerbot.entities.BusStop;
 import edu.zhuravlev.busanalyzerbot.entities.User;
 import edu.zhuravlev.busanalyzerbot.services.busservice.BusStopService;
 import edu.zhuravlev.busanalyzerbot.services.userservice.UserService;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
@@ -35,11 +37,8 @@ import java.util.stream.Collectors;
 @Component("/edit_bus_stop")
 @Scope("prototype")
 @Slf4j
-public class EditBusStopController implements BotController, Sessional {
-    private AbsSender sender;
+public class EditBusStopController extends AbstractSessionalBotController {
     private BusParser parser;
-    private Update lastUpdate;
-    private String chatId;
     private EditControllerState state;
     private User user;
     private UserService userService;
@@ -49,16 +48,15 @@ public class EditBusStopController implements BotController, Sessional {
     private String editableFeature;
     private BusStop editableBusStop;
     private boolean onProcess;
-    private SessionService sessionService;
     private BotControllerService<Set<String>> botControllerService;
     private static final String[] features = {"Название остановки", "Отслеживаемые автобусы"};
 
     private final Map<String, Runnable> featuresMethods = new HashMap<>();
 
     public EditBusStopController() {
+        super();
         this.state = EditControllerState.CHOOSE_EDIT_BUSSTOP;
     }
-
 
     @Autowired
     @Qualifier("answerPollService")
@@ -78,25 +76,8 @@ public class EditBusStopController implements BotController, Sessional {
         this.parser = parser;
     }
     @Autowired
-    public void setSessionService(SessionService sessionService) {
-        this.sessionService = sessionService;
-    }
-    @Autowired
-    public void setSender(AbsSender sender) {
-        this.sender = sender;
-    }
-    @Autowired
     public void setUserService(UserService userService) {
         this.userService = userService;
-    }
-    @Override
-    public synchronized void processUpdate(Update update) {
-        if(this.lastUpdate==null) {
-            this.chatId = update.getMessage().getChatId().toString();
-            init();
-        }
-        this.lastUpdate = update;
-        notify();
     }
 
     @Override
@@ -203,36 +184,11 @@ public class EditBusStopController implements BotController, Sessional {
         userService.updateUser(user);
     }
 
-
-
     private enum EditControllerState {
         CHOOSE_EDIT_BUSSTOP, CHOOSE_EDIT_FEATURE, NEW_VALUE, UPDATE;
     }
-    private void waitUpdate() {
-        try {
-            synchronized (this) {
-                wait();
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
 
-    private void sendSimpleMessage(String textMessage) {
-        var message = new SendMessage();
-        message.setChatId(chatId);
-        message.setText(textMessage);
-        send(message);
-    }
-
-    private Message send(BotApiMethodMessage method) {
-        try {
-            return sender.execute(method);
-        } catch (TelegramApiException e){
-            throw new RuntimeException(e);
-        }
-    }
-
+    @PostConstruct
     private void init() {
         featuresMethods.put(features[0], this::changeBusStopName);
         featuresMethods.put(features[1], this::changePriorityBuses);
@@ -252,6 +208,7 @@ public class EditBusStopController implements BotController, Sessional {
         editableBusStop.setBusStopName(lastUpdate.getMessage().getText());
         userService.updateUser(user);
     }
+
     private void changePriorityBuses() {
         List<Bus> allBuses;
         if(config.isDebugMode())
