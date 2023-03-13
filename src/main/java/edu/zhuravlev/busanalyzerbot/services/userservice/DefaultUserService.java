@@ -50,15 +50,17 @@ public class DefaultUserService implements UserService {
     @Override
     public void updateUser(User user) {
         UserTable updatable = userRepository.getUserTableByChatId(user.getChatId());
-        User dbUser = userMapper.toEntity(updatable);
-
         userMapper.updateUserTable(updatable, user);
         userRepository.save(updatable);
-
     }
 
     @Override
     public boolean hasUser(String chatId) {
         return userRepository.existsByChatId(chatId);
     }
+
+//    @Override
+//    public void deleteBusStop(String busStopName) {
+//        userRepository.deleteBusStopTableByBusStopName(busStopName);
+//    }
 }

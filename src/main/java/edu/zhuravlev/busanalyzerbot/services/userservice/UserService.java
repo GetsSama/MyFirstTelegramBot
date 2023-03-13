@@ -11,4 +11,5 @@ public interface UserService {
     User getUserByChatId(String chatId);
     void updateUser(User user);
     boolean hasUser(String chatId);
+    void deleteBusStop(String busStopName);
 }

@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
 
 import java.util.HashSet;
 import java.util.List;
@@ -30,5 +31,7 @@ public class UserTable {
     @EqualsAndHashCode.Exclude
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "busStops")
+    @SQLDelete(sql = "delete from bus_stops where users_table_id = ? and bus_stop_name = ?" +
+                                                "and bus_stop_url = ? and priority_buses = ?")
     private Set<BusStopTable> busStops = new HashSet<>();
 }
