@@ -4,25 +4,26 @@ import edu.zhuravlev.busanalyzerbot.repositories.user.UserTable;
 import jakarta.annotation.security.DenyAll;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Parent;
 
 import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "bus_stops")
+@Embeddable
 public class BusStopTable {
-    @EqualsAndHashCode.Exclude
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-
-    @ManyToOne
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
+    //@ToString.Exclude
+    //@EqualsAndHashCode.Exclude
+    @Parent
     private UserTable user;
+
+    @Column(nullable = false)
     private String busStopUrl;
+
+    @Column(nullable = false)
     private String busStopName;
+
+    @Column(nullable = false)
     private String priorityBuses;
 }

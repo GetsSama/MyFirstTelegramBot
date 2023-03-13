@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -14,7 +15,14 @@ import java.util.Set;
 public class User {
     private String name;
     private String chatId;
-    private Set<BusStop> busStops;
+    @EqualsAndHashCode.Exclude
+    private Set<BusStop> busStops = new HashSet<>();
+
+    public User(String name, String chatId) {
+        this.name = name;
+        this.chatId = chatId;
+    }
+
     public void addBusStop(BusStop busStop) {
         busStops.add(busStop);
         busStop.setUser(this);

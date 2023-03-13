@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -18,13 +19,16 @@ import java.util.Set;
 public class UserTable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @EqualsAndHashCode.Exclude
+    //@EqualsAndHashCode.Exclude
     private Long id;
 
     private String name;
 
+    @Column(nullable = false)
     private String chatId;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Set<BusStopTable> busStops;
+    @EqualsAndHashCode.Exclude
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "busStops")
+    private Set<BusStopTable> busStops = new HashSet<>();
 }

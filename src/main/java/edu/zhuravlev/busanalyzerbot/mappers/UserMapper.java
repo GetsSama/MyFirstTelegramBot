@@ -18,7 +18,7 @@ public interface UserMapper {
     User toEntity(UserTable userTable);
     UserTable toTable(User user);
 
-    @Mapping(target = "busStops", expression = "java(busStopsMappingByEquals(userTable.getBusStops(), user.getBusStops()))")
+    @Mapping(target = "busStops", expression = "java(busStopsMappingByEquals(userTable, user))")
     @Mapping(target = "chatId", ignore = true)
     void updateUserTable(@MappingTarget UserTable userTable, User user);
 
@@ -36,14 +36,26 @@ public interface UserMapper {
             busStopTable.setUser(userTable);
     }
 
-    default Set<BusStopTable> busStopsMappingByEquals(Set<BusStopTable> busStopTables, Set<BusStop> busStops) {
-        if(busStops == null)
-            busStopTables.clear();
-        else
-            for(var busStop : busStops) {
-                BusStopTable mappedBus = BusStopMapper.INSTANCE.toTable(busStop);
-                busStopTables.add(mappedBus);
+    default Set<BusStopTable> busStopsMappingByEquals(UserTable userTable, User user) {
+        if(user.getBusStops().isEmpty())
+            userTable.getBusStops().clear();
+        else {
+    //Need some optimization. Now naive realization.
+            var busStopTableIter = userTable.getBusStops().iterator();
+            while (busStopTableIter.hasNext()) {
+                var busStopTable = busStopTableIter.next();
+                var busStopEntity = BusStopMapper.INSTANCE.toEntity(busStopTable);
+                busStopEntity.setUser(user);
+                if(!user.getBusStops().contains(busStopEntity))
+                    busStopTableIter.remove();
             }
-        return busStopTables;
+            for (var busStop : user.getBusStops()) {
+                var busStopTable = BusStopMapper.INSTANCE.toTable(busStop);
+                busStopTable.setUser(userTable);
+                userTable.getBusStops().add(busStopTable);
+            }
+        }
+
+        return userTable.getBusStops();
     }
 }

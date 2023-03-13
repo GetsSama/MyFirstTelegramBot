@@ -1,22 +1,14 @@
 package edu.zhuravlev.busanalyzerbot.controllers;
 
-import edu.zhuravlev.busanalyzerbot.cashed.sessions.SessionService;
-import edu.zhuravlev.busanalyzerbot.cashed.sessions.Sessional;
 import edu.zhuravlev.busanalyzerbot.entities.BusStop;
 import edu.zhuravlev.busanalyzerbot.entities.User;
-import edu.zhuravlev.busanalyzerbot.services.busservice.BusStopService;
 import edu.zhuravlev.busanalyzerbot.services.userservice.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethodMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import org.telegram.telegrambots.meta.bots.AbsSender;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +17,6 @@ import java.util.List;
 @Scope("prototype")
 public class DeleteBusStopController extends AbstractSessionalBotController {
     private UserService userService;
-    private BusStopService busStopService;
     private User user;
 
     @Override
@@ -38,10 +29,6 @@ public class DeleteBusStopController extends AbstractSessionalBotController {
     @Autowired
     public void setUserService(UserService userService) {
         this.userService = userService;
-    }
-    @Autowired
-    public void setBusStopService(BusStopService busStopService) {
-        this.busStopService = busStopService;
     }
 
     private void deleteBusStop() {
@@ -83,6 +70,7 @@ public class DeleteBusStopController extends AbstractSessionalBotController {
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("User with chat id: " + user.getChatId() + " do not have bus stop with name \"" + busStopsNames.get(busStopPosition) + "\""));
 
-        busStopService.deleteBusStop(deletableBusStop);
+        user.getBusStops().remove(deletableBusStop);
+        userService.updateUser(user);
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Component("/start")
@@ -46,7 +47,7 @@ public class StartController extends AbstractBotController{
         setChatId(update.getMessage().getChatId().toString());
         var userName = update.getMessage().getFrom().getFirstName();
 
-        var newUser = new User(userName, chatId, Set.of());
+        var newUser = new User(userName, chatId);
 
         if(!userService.hasUser(chatId)) {
             userService.addUser(newUser);

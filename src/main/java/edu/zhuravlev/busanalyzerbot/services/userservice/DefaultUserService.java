@@ -52,10 +52,9 @@ public class DefaultUserService implements UserService {
         UserTable updatable = userRepository.getUserTableByChatId(user.getChatId());
         User dbUser = userMapper.toEntity(updatable);
 
-        if(!dbUser.equals(user)) {
-            userMapper.updateUserTable(updatable, user);
-            userRepository.save(updatable);
-        }
+        userMapper.updateUserTable(updatable, user);
+        userRepository.save(updatable);
+
     }
 
     @Override

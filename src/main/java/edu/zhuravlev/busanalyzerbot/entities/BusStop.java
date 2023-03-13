@@ -10,7 +10,6 @@ import java.util.Set;
 @AllArgsConstructor
 public class BusStop {
     @ToString.Exclude
-    @EqualsAndHashCode.Exclude
     private User user;
     private String busStopUrl;
     private String busStopName;

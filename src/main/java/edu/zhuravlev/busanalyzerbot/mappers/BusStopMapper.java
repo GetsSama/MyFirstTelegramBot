@@ -11,9 +11,8 @@ import org.mapstruct.factory.Mappers;
 import java.util.Iterator;
 import java.util.Set;
 
-@Mapper(componentModel = "spring", uses = {BusStopMapper.class})
+@Mapper(componentModel = "spring")
 public interface BusStopMapper {
-
     BusStopMapper INSTANCE = Mappers.getMapper(BusStopMapper.class);
     String splitter = ",\\s*";
 

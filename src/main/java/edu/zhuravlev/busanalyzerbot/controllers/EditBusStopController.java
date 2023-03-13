@@ -3,35 +3,23 @@ package edu.zhuravlev.busanalyzerbot.controllers;
 import busentity.Bus;
 import busparser.BusParser;
 import edu.zhuravlev.busanalyzerbot.BotConfig;
-import edu.zhuravlev.busanalyzerbot.cashed.sessions.SessionService;
-import edu.zhuravlev.busanalyzerbot.cashed.sessions.Sessional;
-import edu.zhuravlev.busanalyzerbot.controllers.service.AnswersPollService;
 import edu.zhuravlev.busanalyzerbot.controllers.service.BotControllerService;
 import edu.zhuravlev.busanalyzerbot.entities.BusStop;
 import edu.zhuravlev.busanalyzerbot.entities.User;
-import edu.zhuravlev.busanalyzerbot.services.busservice.BusStopService;
 import edu.zhuravlev.busanalyzerbot.services.userservice.UserService;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethodMessage;
 import org.telegram.telegrambots.meta.api.methods.polls.SendPoll;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import org.telegram.telegrambots.meta.bots.AbsSender;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.File;
-import java.lang.reflect.Method;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component("/edit_bus_stop")
@@ -42,7 +30,6 @@ public class EditBusStopController extends AbstractSessionalBotController {
     private EditControllerState state;
     private User user;
     private UserService userService;
-    private BusStopService busStopService;
     private BotConfig config;
     private String editableBusName;
     private String editableFeature;
@@ -62,10 +49,6 @@ public class EditBusStopController extends AbstractSessionalBotController {
     @Qualifier("answerPollService")
     public void setBotControllerService(BotControllerService<Set<String>> botControllerService) {
         this.botControllerService = botControllerService;
-    }
-    @Autowired
-    public void setBusStopService(BusStopService busStopService) {
-        this.busStopService = busStopService;
     }
     @Autowired
     public void setConfig(BotConfig config) {
@@ -204,7 +187,7 @@ public class EditBusStopController extends AbstractSessionalBotController {
             waitUpdate();
         }
 
-        busStopService.deleteBusStop(editableBusStop);
+        //busStopService.deleteBusStop(editableBusStop);
         editableBusStop.setBusStopName(lastUpdate.getMessage().getText());
         userService.updateUser(user);
     }
@@ -229,6 +212,7 @@ public class EditBusStopController extends AbstractSessionalBotController {
         var newPriorityBuses = botControllerService.getProcessUpdateResult(lastUpdate);
 
         editableBusStop.setPriorityBuses(newPriorityBuses);
-        busStopService.updateBusStop(editableBusStop);
+        //busStopService.updateBusStop(editableBusStop);
+        userService.updateUser(user);
     }
 }
