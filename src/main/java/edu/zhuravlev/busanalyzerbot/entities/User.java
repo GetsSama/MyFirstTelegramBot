@@ -24,7 +24,7 @@ public class User {
     }
 
     public void addBusStop(BusStop busStop) {
-        busStops.add(busStop);
         busStop.setUser(this);
+        busStops.add(busStop);
     }
 }

@@ -8,6 +8,7 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -33,8 +34,10 @@ public interface BusStopMapper {
     }
 
     default String getStringPriorityBusesFromList(Set<String> buses) {
+        String[] busesStr = buses.toArray(new String[0]);
+        Arrays.sort(busesStr);
         StringBuilder stringBuilder = new StringBuilder();
-        Iterator<String> busIter = buses.iterator();
+        var busIter = Arrays.stream(busesStr).iterator();
 
         while (busIter.hasNext()) {
             stringBuilder.append(busIter.next());

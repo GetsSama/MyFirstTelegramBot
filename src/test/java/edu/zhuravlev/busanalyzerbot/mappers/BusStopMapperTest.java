@@ -25,6 +25,21 @@ class BusStopMapperTest {
             public BusStopTable toTable(BusStop busStop) {
                 return null;
             }
+
+            @Override
+            public void updateBusStopTable(BusStopTable updatable, BusStop updater) {
+
+            }
+
+            @Override
+            public Set<String> getListPriorityBusesFromString(String buses) {
+                return BusStopMapper.super.getListPriorityBusesFromString(buses);
+            }
+
+            @Override
+            public String getStringPriorityBusesFromList(Set<String> buses) {
+                return BusStopMapper.super.getStringPriorityBusesFromList(buses);
+            }
         };
 
         Set<String> tested = busStopMapper.getListPriorityBusesFromString(testStringBuses);
@@ -44,6 +59,21 @@ class BusStopMapperTest {
             @Override
             public BusStopTable toTable(BusStop busStop) {
                 return null;
+            }
+
+            @Override
+            public void updateBusStopTable(BusStopTable updatable, BusStop updater) {
+
+            }
+
+            @Override
+            public Set<String> getListPriorityBusesFromString(String buses) {
+                return BusStopMapper.super.getListPriorityBusesFromString(buses);
+            }
+
+            @Override
+            public String getStringPriorityBusesFromList(Set<String> buses) {
+                return BusStopMapper.super.getStringPriorityBusesFromList(buses);
             }
         };
 

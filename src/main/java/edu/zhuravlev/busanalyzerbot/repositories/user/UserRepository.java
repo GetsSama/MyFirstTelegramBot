@@ -13,5 +13,5 @@ public interface UserRepository extends CrudRepository<UserTable, Long> {
     UserTable getUserTableByChatId(String chatId);
     boolean existsByChatId(String chatId);
 //    @Query("delete from UserTable as ut where ut.busStops.busStopName = :busName")
-    void deleteBusStopTable(BusStopTable busStopTable);
+    //void deleteBusStopTable(BusStopTable busStopTable);
 }

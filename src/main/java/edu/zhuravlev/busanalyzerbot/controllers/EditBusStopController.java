@@ -187,7 +187,6 @@ public class EditBusStopController extends AbstractSessionalBotController {
             waitUpdate();
         }
 
-        //busStopService.deleteBusStop(editableBusStop);
         editableBusStop.setBusStopName(lastUpdate.getMessage().getText());
         userService.updateUser(user);
     }
@@ -212,7 +211,6 @@ public class EditBusStopController extends AbstractSessionalBotController {
         var newPriorityBuses = botControllerService.getProcessUpdateResult(lastUpdate);
 
         editableBusStop.setPriorityBuses(newPriorityBuses);
-        //busStopService.updateBusStop(editableBusStop);
         userService.updateUser(user);
     }
 }

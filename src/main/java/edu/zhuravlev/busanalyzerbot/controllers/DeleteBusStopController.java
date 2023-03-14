@@ -72,6 +72,5 @@ public class DeleteBusStopController extends AbstractSessionalBotController {
 
         user.getBusStops().remove(deletableBusStop);
         userService.updateUser(user);
-        //userService.deleteBusStop(deletableBusStop.getBusStopName());
     }
 }

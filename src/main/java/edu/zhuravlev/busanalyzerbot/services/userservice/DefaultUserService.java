@@ -1,9 +1,15 @@
 package edu.zhuravlev.busanalyzerbot.services.userservice;
 
+import edu.zhuravlev.busanalyzerbot.entities.BusStop;
 import edu.zhuravlev.busanalyzerbot.entities.User;
+import edu.zhuravlev.busanalyzerbot.mappers.BusStopMapper;
 import edu.zhuravlev.busanalyzerbot.mappers.UserMapper;
+import edu.zhuravlev.busanalyzerbot.repositories.busstop.BusStopTable;
 import edu.zhuravlev.busanalyzerbot.repositories.user.UserTable;
 import edu.zhuravlev.busanalyzerbot.repositories.user.UserRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +23,7 @@ import java.util.Set;
 public class DefaultUserService implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final BusStopMapper busStopMapper;
 
     @Override
     public User getUserById(Long id) {
@@ -58,9 +65,4 @@ public class DefaultUserService implements UserService {
     public boolean hasUser(String chatId) {
         return userRepository.existsByChatId(chatId);
     }
-
-//    @Override
-//    public void deleteBusStop(String busStopName) {
-//        userRepository.deleteBusStopTableByBusStopName(busStopName);
-//    }
 }

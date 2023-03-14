@@ -1,5 +1,6 @@
 package edu.zhuravlev.busanalyzerbot.repositories.user;
 
+import busentity.Bus;
 import edu.zhuravlev.busanalyzerbot.repositories.busstop.BusStopTable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -31,7 +32,12 @@ public class UserTable {
     @EqualsAndHashCode.Exclude
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "busStops")
-    @SQLDelete(sql = "delete from bus_stops where users_table_id = ? and bus_stop_name = ?" +
-                                                "and bus_stop_url = ? and priority_buses = ?")
+//    @SQLDelete(sql = "delete from bus_stops where user_table_id = ? and bus_stop_name = ?" +
+//                                                " and bus_stop_url = ? and priority_buses = ?")
     private Set<BusStopTable> busStops = new HashSet<>();
+
+    public void addBusStopTable(BusStopTable busStopTable) {
+        busStopTable.setUser(this);
+        busStops.add(busStopTable);
+    }
 }

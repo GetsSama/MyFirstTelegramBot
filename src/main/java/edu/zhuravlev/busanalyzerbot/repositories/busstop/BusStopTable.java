@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @Embeddable
 public class BusStopTable {
-    //@ToString.Exclude
+    @ToString.Exclude
     //@EqualsAndHashCode.Exclude
     @Parent
     private UserTable user;

@@ -10,6 +10,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Mapper(componentModel = "spring", uses = {BusStopMapper.class})
@@ -25,15 +26,15 @@ public interface UserMapper {
     @AfterMapping
     default void setToBusStopRelations(@MappingTarget User user) {
         var busStops = user.getBusStops();
-        for(var busStop : busStops)
-            busStop.setUser(user);
+        user.setBusStops(new HashSet<>(Math.max( (int) ( busStops.size() / .75f ) + 1, 16 )));
+        busStops.forEach(user::addBusStop);
     }
 
     @AfterMapping
     default void setToBusStopTableRelations(@MappingTarget UserTable userTable) {
         var busStopsTables = userTable.getBusStops();
-        for(var busStopTable : busStopsTables)
-            busStopTable.setUser(userTable);
+        userTable.setBusStops(new HashSet<>(Math.max( (int) ( busStopsTables.size() / .75f ) + 1, 16 )));
+        busStopsTables.forEach(userTable::addBusStopTable);
     }
 
     default Set<BusStopTable> busStopsMappingByEquals(UserTable userTable, User user) {
