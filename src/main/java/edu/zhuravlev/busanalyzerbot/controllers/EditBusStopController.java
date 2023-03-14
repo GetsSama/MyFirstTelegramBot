@@ -73,7 +73,6 @@ public class EditBusStopController extends AbstractSessionalBotController {
                 case CHOOSE_EDIT_BUSSTOP -> {
                     choseEditableBusStop();
                     state = EditControllerState.CHOOSE_EDIT_FEATURE;
-                    waitUpdate();
                 }
                 case CHOOSE_EDIT_FEATURE -> {
                     choseEditableFeature();

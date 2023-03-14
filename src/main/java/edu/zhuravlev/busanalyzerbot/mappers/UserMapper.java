@@ -43,13 +43,16 @@ public interface UserMapper {
         else {
     //Need some optimization. Now naive realization.
             var busStopTableIter = userTable.getBusStops().iterator();
+            BusStopTable deletable = null;
             while (busStopTableIter.hasNext()) {
                 var busStopTable = busStopTableIter.next();
                 var busStopEntity = BusStopMapper.INSTANCE.toEntity(busStopTable);
                 busStopEntity.setUser(user);
                 if(!user.getBusStops().contains(busStopEntity))
-                    busStopTableIter.remove();
+                    //busStopTableIter.remove();
+                    deletable = busStopTable;
             }
+            userTable.getBusStops().remove(deletable);
             for (var busStop : user.getBusStops()) {
                 var busStopTable = BusStopMapper.INSTANCE.toTable(busStop);
                 busStopTable.setUser(userTable);

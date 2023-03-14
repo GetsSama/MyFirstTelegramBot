@@ -1,8 +1,6 @@
 package edu.zhuravlev.busanalyzerbot.services.userservice;
 
-import edu.zhuravlev.busanalyzerbot.entities.BusStop;
 import edu.zhuravlev.busanalyzerbot.entities.User;
-import edu.zhuravlev.busanalyzerbot.repositories.busstop.BusStopTable;
 
 import java.util.Set;
 
