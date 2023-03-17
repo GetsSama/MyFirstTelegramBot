@@ -32,6 +32,7 @@ public class BotConfig {
     @Bean
     public List<BotCommand> botCommands() {
         return Arrays.stream(MyCommands.values())
+                .filter(c -> !c.equals(MyCommands.START))
                 .map(MyCommands::getBotCommand)
                 .toList();
     }
