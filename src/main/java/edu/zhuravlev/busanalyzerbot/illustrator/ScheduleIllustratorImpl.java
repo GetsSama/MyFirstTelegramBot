@@ -39,9 +39,7 @@ public class ScheduleIllustratorImpl implements ScheduleIllustrator{
     };
     private final Predicate<Bus> onMap = Bus::isBusOnLive;
     private final Predicate<Bus> arrivedNow = b -> b.getArrivedTime().equals("прибывает");
-    private final Predicate<Bus> byLocalTimeFormat = b -> {
-        return b.getArrivedTime().split(" ").length == 1;
-    };
+    private final Predicate<Bus> byLocalTimeFormat = b -> b.getArrivedTime().split(" ").length == 1;
 
     @Override
     public String illustrateAll(List<Bus> buses) {

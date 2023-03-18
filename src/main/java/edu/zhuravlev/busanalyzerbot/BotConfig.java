@@ -3,6 +3,7 @@ package edu.zhuravlev.busanalyzerbot;
 import busparser.BusParser;
 import busparser.DefaultBusParser;
 import edu.zhuravlev.busanalyzerbot.botcommands.MyCommands;
+import edu.zhuravlev.busanalyzerbot.cashed.cash.CashedBusParser;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -26,7 +27,7 @@ public class BotConfig {
 
     @Bean
     public BusParser busParser() {
-        return new DefaultBusParser();
+        return new CashedBusParser(new DefaultBusParser());
     }
 
     @Bean
