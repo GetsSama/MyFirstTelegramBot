@@ -18,7 +18,7 @@ public class AnswersPollService implements BotControllerService<Set<String>> {
                     .collect(Collectors.toSet());
             return chosenBuses;
         } else {
-            throw new RuntimeException("Update object should contain the Poll object! But given: " + update);
+            throw new IllegalArgumentException("Update object should contain the Poll object! But given: " + update);
         }
     }
 

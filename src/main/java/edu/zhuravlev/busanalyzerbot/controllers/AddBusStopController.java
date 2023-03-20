@@ -107,8 +107,15 @@ public class AddBusStopController extends AbstractSessionalBotController{
         List<Bus> allBuses;
         if(botConfig.isDebugMode())
             allBuses = parser.parse(new File(botConfig.getPath()));
-        else
-            allBuses = parser.parse(busStopUrl);
+        else {
+            try {
+                allBuses = parser.parse(busStopUrl);
+            } catch (IllegalArgumentException e) {
+                sendSimpleMessage("Введен некорректный URL, убедитесь, что URL относится к запрашиваемой автобусной остановке на картах.\nОстановка не добавлена, попробуйте снова.");
+                onProcess = false;
+                return;
+            }
+        }
 
         var allBusesName = allBuses.stream().map(Bus::getBusName).toList();
         var poll = new SendPoll();
@@ -123,7 +130,14 @@ public class AddBusStopController extends AbstractSessionalBotController{
 
         sessionService.redirectSession(chatId, identifierPoll);
         waitUpdate();
-        this.priorityBuses = answerPollService.getProcessUpdateResult(lastUpdate);
+
+        try {
+            this.priorityBuses = answerPollService.getProcessUpdateResult(lastUpdate);
+        } catch (IllegalArgumentException e) {
+            sendSimpleMessage("Неожиданное значение! Пожалуйста, убедитесь что ответ содержит голосование в опросе и попробуйте снова.");
+            onProcess = false;
+            return;
+        }
     }
 
     private void saveAddBusStop() {
