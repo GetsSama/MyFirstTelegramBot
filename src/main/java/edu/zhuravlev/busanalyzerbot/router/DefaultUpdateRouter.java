@@ -42,6 +42,7 @@ public class DefaultUpdateRouter implements UpdateRouter{
 
     @Override
     public void process(Update update) {
+        log.info("Update: " + update);
         if(update.hasMessage()) {
             String message = update.getMessage().getText();
 
@@ -71,8 +72,11 @@ public class DefaultUpdateRouter implements UpdateRouter{
             }
         }
         var botControllerFromId = sessionService.getSessionById(getIdentifierFromUpdate(update));
-        if(botControllerFromId!=null)
+        try {
             botControllerFromId.getController().processUpdate(update);
+        } catch (NullPointerException e) {
+            log.error("Unsupported command in this context throw exception: " + e);
+        }
     }
 
     private String getIdentifierFromUpdate(Update update) {

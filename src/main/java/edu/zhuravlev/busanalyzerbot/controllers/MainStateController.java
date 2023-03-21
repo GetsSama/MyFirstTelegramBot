@@ -145,7 +145,12 @@ public class MainStateController extends AbstractSessionalBotController {
     }
 
     private void processButton(Update update) {
-        var busStopName = update.getMessage().getText();
+        String busStopName;
+        if(update.hasMessage())
+            busStopName = update.getMessage().getText();
+        else
+            return;
+
         BusStop chosenBusStop = null;
         for(var busStop : user.getBusStops()) {
             if(busStop.getBusStopName().equals(busStopName))
