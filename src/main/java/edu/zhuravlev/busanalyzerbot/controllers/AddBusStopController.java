@@ -118,26 +118,37 @@ public class AddBusStopController extends AbstractSessionalBotController{
         }
 
         var allBusesName = allBuses.stream().map(Bus::getBusName).toList();
-        var poll = new SendPoll();
 
-        poll.setChatId(chatId);
-        poll.setQuestion("Какие автобусы отслеживать?");
-        poll.setOptions(allBusesName);
-        poll.setAllowMultipleAnswers(true);
+        if(allBusesName.size() >= 2) {
+            var poll = new SendPoll();
 
-        var returnMessage = send(poll);
-        var identifierPoll = returnMessage.getPoll().getId();
+            poll.setChatId(chatId);
+            poll.setQuestion("Какие автобусы отслеживать?");
+            if(allBusesName.size() <= 10)
+                poll.setOptions(allBusesName);
+            else
+                poll.setOptions(allBusesName.subList(0,9));
+            poll.setAllowMultipleAnswers(true);
 
-        sessionService.redirectSession(chatId, identifierPoll);
-        waitUpdate();
+            var returnMessage = send(poll);
+            var identifierPoll = returnMessage.getPoll().getId();
 
-        try {
-            this.priorityBuses = answerPollService.getProcessUpdateResult(lastUpdate);
-        } catch (IllegalArgumentException e) {
-            sendSimpleMessage("Неожиданное значение! Пожалуйста, убедитесь что ответ содержит голосование в опросе и попробуйте снова.");
-            onProcess = false;
-            return;
-        }
+            sessionService.redirectSession(chatId, identifierPoll);
+            waitUpdate();
+
+            try {
+                this.priorityBuses = answerPollService.getProcessUpdateResult(lastUpdate);
+            } catch (IllegalArgumentException e) {
+                sendSimpleMessage("Неожиданное значение! Пожалуйста, убедитесь что ответ содержит голосование в опросе и попробуйте снова.");
+                onProcess = false;
+                return;
+            }
+        } else if (allBusesName.size() != 0)
+            this.priorityBuses = Set.of(allBusesName.get(0));
+            else {
+                sendSimpleMessage("Остановка с нулевым количеством автобусов!");
+                onProcess = false;
+            }
     }
 
     private void saveAddBusStop() {

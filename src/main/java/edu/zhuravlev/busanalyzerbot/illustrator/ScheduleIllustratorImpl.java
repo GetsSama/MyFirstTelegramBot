@@ -43,13 +43,12 @@ public class ScheduleIllustratorImpl implements ScheduleIllustrator{
 
     @Override
     public String illustrateAll(List<Bus> buses) {
-        var orderedBusList = orderBuses(buses);
-        StringBuilder builder = new StringBuilder(orderedBusList.size() * 2);
+        StringBuilder builder = new StringBuilder(buses.size() * 2);
         String line = "\n-------------------------\n";
 
-        for (int i = 0; i<orderedBusList.size(); i++) {
-            builder.append(formatOneBus(orderedBusList.get(i)));
-            if(i!=orderedBusList.size()-1) builder.append(line);
+        for (int i = 0; i<buses.size(); i++) {
+            builder.append(formatOneBus(buses.get(i)));
+            if(i!=buses.size()-1) builder.append(line);
         }
 
         return builder.toString();
@@ -73,7 +72,8 @@ public class ScheduleIllustratorImpl implements ScheduleIllustrator{
         return busName + where;
     }
 
-    private List<Bus> orderBuses(List<Bus> buses) {
+    @Override
+    public List<Bus> orderBuses(List<Bus> buses) {
         var arrived = buses.stream()
                 .filter(onMap)
                 .filter(arrivedNow);

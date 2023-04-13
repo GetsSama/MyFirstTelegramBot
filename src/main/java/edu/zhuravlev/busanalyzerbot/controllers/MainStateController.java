@@ -174,7 +174,12 @@ public class MainStateController extends AbstractSessionalBotController {
                 .sorted(Comparator.comparing(Bus::getArrivedTime))
                 .toList();
 
-        var formatMessage = illustrator.illustrateAll(messagingBuses);
+        String formatMessage;
+        try {
+            formatMessage = illustrator.illustrateAllWithOrder(messagingBuses);
+        } catch (Exception e) {
+            formatMessage = illustrator.illustrateAll(messagingBuses);
+        }
         var message = new SendMessage();
         message.setChatId(chatId);
         message.setText(formatMessage);
